@@ -26,3 +26,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Video/presentation prep (not part of the published project)
+presentation/
