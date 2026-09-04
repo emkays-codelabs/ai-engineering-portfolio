@@ -1,327 +1,257 @@
-# AI Customer Support Resolution Platform
+# 🤖 AI Customer Support Resolution Platform
 
-## Architecture
+> An FDE-driven AI solution for intelligent customer-support automation,
+> knowledge retrieval, business-system integration, and human escalation.
 
-The proposed AI Customer Support Resolution Platform follows a controlled
-workflow combining intent detection, knowledge retrieval, business-system
-integration, and human escalation.
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-7%2F7%20passing-brightgreen?logo=pytest&logoColor=white)
+![Status](https://img.shields.io/badge/status-MVP-orange)
+![License](https://img.shields.io/badge/license-Proprietary-lightgrey)
+
+---
+
+## Copyright & Ownership
+
+© 2026 SaffronyxAI.in. All Rights Reserved.
+
+This project and its contents are original work created by **Mahesh Kumar,
+Founder & CEO of SaffronyxAI.in**.
+
+Unauthorized copying, reproduction, modification, redistribution, or
+commercial use of this material, in whole or in part, is prohibited without
+prior written permission from SaffronyxAI.in.
+
+**Author:** Mahesh Kumar
+**Role:** Founder & CEO
+**Company:** SaffronyxAI.in
+
+---
+
+## 1. Project Overview
+
+Retail support teams drown in the same handful of questions every day —
+"where's my order," "reset my password," "when's my refund" — while the
+genuinely hard cases wait in the same queue. This project is a Forward
+Deployment Engineer (FDE) case study: a full walkthrough of turning that
+mess into a controlled, measurable AI-support system, from client
+discovery all the way to a working, tested prototype and a real deployment
+plan.
+
+It's not a chatbot demo. It's the engineering process an FDE actually runs
+at a client: **discover → define → design → build → test → deploy → measure.**
+
+## 2. Client Problem
+
+A retail client fields thousands of support queries a day. Most are
+repetitive — FAQs, order status, refunds, account resets — but they're
+handled the same way as everything else: a human reads it, investigates
+it, and answers it. That doesn't scale. Response times grow, answers get
+inconsistent across agents, and complex cases lose context every time
+they're handed off.
+
+## 3. Business Impact
+
+| Symptom | Effect |
+|---|---|
+| Repetitive queries eat agent time | Slower response on everything |
+| No shared source of truth | Inconsistent answers across agents |
+| Manual triage | Complex cases don't get to the right agent fast |
+| Context lost on handoff | Customers repeat themselves |
+| Headcount-bound scaling | Cost grows linearly with volume |
+
+## 4. Proposed Solution
+
+An **AI Support Agent** that classifies every incoming request, resolves
+what it can safely resolve (FAQ answers via knowledge retrieval,
+account/order lookups via business APIs), and routes everything else —
+low-confidence, sensitive, or explicitly-requested — to a human, **with
+full context attached** so nobody repeats themselves.
+
+```
+Customer → AI Support Agent → Intent Detection
+                                     │
+              ┌──────────────────────┼──────────────────────┐
+              ▼                      ▼                      ▼
+        FAQ / Knowledge        Account / Order         Complex / Risky
+              │                      │                      │
+        RAG Knowledge Base     Business APIs          Human Escalation
+              │                      │                      │
+              └──────────────────────┴──────────────────────┘
+                                     ▼
+                            Customer Resolution
+```
+
+## 5. Architecture
 
 ![AI Customer Support Resolution Platform Architecture](architecture-diagram.png)
 
-See [architecture.md](architecture.md) for the full system design,
-[requirements.md](requirements.md) for the discovery process behind it,
-and [deployment-plan.md](deployment-plan.md) for how this MVP evolves
-toward a production deployment.
+Full breakdown — component responsibilities, request flow, design
+principles, and how the MVP grows into the production system — lives in
+[architecture.md](architecture.md). The client discovery behind these
+decisions is in [requirements.md](requirements.md), and the rollout plan
+is in [deployment-plan.md](deployment-plan.md).
 
----
+## 6. Key Capabilities
 
-## 1. Problem Definition
+- 🎯 **Intent detection** — classify what the customer actually wants
+- 📚 **Knowledge retrieval / RAG** — answer from approved internal sources
+- 🔌 **Business-system integration** — controlled, read/write-scoped API calls
+- 🧑‍💻 **Human escalation** — with full context, not a cold handoff
+- 📉 **Confidence-based routing** — low-confidence predictions never guess
+- 📊 **Monitoring & evaluation** — every decision is measurable
 
-### 1.1 Client Context
+## 7. MVP Scope
 
-The client is a retail company that receives thousands of customer-support
-queries every day across its customer-service channels.
+The current prototype proves the routing layer — the decision-making core
+everything else plugs into. Given a customer question, it classifies into:
 
-The existing support operation relies heavily on human agents to understand,
-investigate, and resolve customer requests.
+1. **FAQ**
+2. **Account Issue**
+3. **Order Issue**
+4. **Refund Issue**
+5. **Human Escalation**
 
-As customer-support volume grows, the existing support team is becoming
-increasingly difficult to scale.
+No real customer data, no live APIs, no production infra — that's
+deliberate. See [§9 Future Enhancements](#13-future-enhancements) for what
+comes next.
 
----
+## 8. Technology
 
-## 1.2 Current State
+- **Python 3.10+** — zero external runtime dependencies
+- **Rule-based weighted keyword classification** — deterministic, debuggable,
+  free to run, no API key required
+- **pytest** — automated test suite
 
-The current customer-support process can be represented as:
-
-```
-Customer
-   ↓
-Support Channel
-   ↓
-Support Team
-   ↓
-Manual Query Analysis
-   ↓
-Knowledge / System Lookup
-   ↓
-Resolution or Escalation
-   ↓
-Customer
-```
-
-A significant portion of incoming requests may be repetitive or follow
-well-defined workflows.
-
-Examples include:
-
-- Frequently asked questions
-- Account-related questions
-- Order-status questions
-- Refund-related questions
-- Common support requests
-
-Human agents therefore spend valuable time handling interactions that may
-be suitable for automation.
-
----
-
-## 1.3 Core Problem
-
-The client needs a scalable customer-support capability that can handle a
-high volume of customer requests without requiring a proportional increase
-in human support capacity.
-
-The key problem is not simply the lack of a chatbot.
-
-The client needs a system that can:
-
-- Understand the customer's intent.
-- Retrieve relevant and trusted internal information.
-- Access authorized business systems when required.
-- Provide accurate responses.
-- Recognize when it cannot safely resolve a request.
-- Escalate complex cases to human agents.
-- Preserve the relevant context during escalation.
-
----
-
-## 1.4 Business Impact
-
-The current situation can lead to several business challenges:
-
-### Increased Support Workload
-
-Human agents spend time answering repetitive questions that may potentially
-be automated.
-
-### Longer Response Times
-
-High support volume can increase the time required to respond to customers.
-
-### Limited Scalability
-
-Increasing customer demand may require additional human support capacity.
-
-### Inconsistent Responses
-
-Different agents may provide different answers to similar customer
-questions, particularly when information is distributed across multiple
-sources.
-
-### Inefficient Escalation
-
-When complex cases are transferred between systems or agents, important
-context may be lost, requiring customers to repeat information.
-
-### Increased Operating Cost
-
-A support model that depends primarily on human agents becomes increasingly
-expensive as interaction volume grows.
-
----
-
-## 1.5 Proposed Solution
-
-We propose an **AI Customer Support Resolution Platform** that combines
-intent detection, knowledge retrieval, controlled business-system
-integration, and human escalation.
-
-The high-level solution is:
+## 9. Project Structure
 
 ```
-Customer
-   ↓
-Web / Mobile / Support Channel
-   ↓
-AI Support Agent
-   ↓
-Intent Detection
-   ↓
-┌───────────────────────────────────────┐
-│                                       │
-│  FAQ / Knowledge → RAG Knowledge Base │
-│                                       │
-│  Account / Order → Business APIs      │
-│                                       │
-│  Complex / Risky → Human Escalation   │
-│                                       │
-└───────────────────────────────────────┘
-   ↓
-Customer Resolution
+├── README.md               ← you are here
+├── requirements.md          ← 63 client discovery questions across 9 areas
+├── architecture.md          ← system design (MVP + production)
+├── architecture-diagram.png
+├── prototype.py              ← the working MVP
+├── deployment-plan.md        ← MVP → pilot → production → monitoring
+├── requirements.txt
+├── .gitignore
+└── tests/
+    └── test_prototype.py     ← 7 automated tests
 ```
 
-The AI should not attempt to resolve every request autonomously.
-
-Instead, it should determine the appropriate path for each customer
-interaction.
-
----
-
-## 1.6 Expected AI Capabilities
-
-The proposed platform should provide the following capabilities:
-
-### Intent Detection
-
-Classify incoming customer requests into appropriate categories.
-
-### Knowledge Retrieval
-
-Search approved internal information to retrieve relevant evidence for
-customer questions.
-
-### AI Response Generation
-
-Generate a clear response based on the customer's request and retrieved
-information.
-
-### Business-System Integration
-
-Use authorized APIs or tools to retrieve customer-specific information
-when required.
-
-### Human Escalation
-
-Transfer complex, sensitive, or low-confidence cases to human support.
-
-### Context Preservation
-
-Provide the human agent with relevant conversation history, detected
-intent, retrieved information, and actions already performed.
-
----
-
-## 1.7 MVP Scope
-
-The initial prototype will demonstrate the core decision-making capability
-of the proposed platform.
-
-The prototype will accept a customer question and classify it into one of
-the following categories:
-
-1. FAQ
-2. Account Issue
-3. Order Issue
-4. Refund Issue
-5. Human Escalation
-
-The prototype will use sample customer questions and will not connect to
-real customer databases, payment systems, or production APIs.
-
-The objective of the MVP is to demonstrate the core AI-support workflow
-before progressing toward production integrations.
-
----
-
-## 1.8 Expected Business Outcomes
-
-A successful implementation should aim to:
-
-- Reduce repetitive workload for human support agents.
-- Improve customer response time.
-- Increase the number of customer requests that can be handled at scale.
-- Improve consistency of support responses.
-- Route complex requests to the appropriate human agents.
-- Reduce unnecessary customer handoffs.
-- Provide measurable AI-support performance.
-- Establish a foundation for future automation.
-
----
-
-## 1.9 Problem-to-Solution Mapping
-
-| Client Problem | Proposed Capability |
-|---|---|
-| High support volume | AI-assisted automation |
-| Repetitive questions | FAQ / knowledge-based responses |
-| Difficulty finding information | RAG / knowledge retrieval |
-| Customer-specific requests | Authorized business APIs |
-| Complex requests | Human escalation |
-| Lost context during handoff | Context-aware escalation |
-| Inconsistent responses | Centralized approved knowledge |
-| Limited scalability | AI-assisted support capacity |
-
----
-
-## 1.10 FDE Perspective
-
-The role of the Forward Deployment Engineer is to translate the client's
-business problem into a practical technical solution.
-
-The objective is not to introduce AI technology for its own sake.
-
-The objective is to determine:
-
-**What is the client's problem?**
-
-↓
-
-**Which parts of the workflow can safely be automated?**
-
-↓
-
-**What knowledge and systems does the AI need?**
-
-↓
-
-**Where should humans remain in the loop?**
-
-↓
-
-**How can the solution be deployed and measured in production?**
-
----
-
-## How to Run the Prototype
-
-### 1. Clone the Repository
+## 10. How to Run
 
 ```bash
-git clone https://github.com/<your-username>/ai-support-fde-case-study.git
+git clone https://github.com/emkays-codelabs/ai-support-fde-case-study.git
 cd ai-support-fde-case-study
 ```
 
-### 2. Create a Virtual Environment
-
-Windows:
+**Create a virtual environment**
 
 ```bash
+# Windows
 python -m venv .venv
 .venv\Scripts\activate
-```
 
-macOS / Linux:
-
-```bash
+# macOS / Linux
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Install Dependencies
+**Install and run**
 
 ```bash
 pip install -r requirements.txt
-```
-
-### 4. Run the Prototype
-
-```bash
 python prototype.py
 ```
 
-### 5. Run Automated Tests
+**Sample output**
+
+```
+Enter your question: Where is my order?
+
+=============================================
+AI CUSTOMER SUPPORT CLASSIFICATION
+=============================================
+
+Customer Question:
+Where is my order?
+
+Predicted Category:
+Order Issue
+
+Confidence:
+100.00%
+
+Recommended Action:
+Continue with the appropriate AI support workflow.
+=============================================
+```
+
+## 11. Testing
 
 ```bash
 pytest -v
 ```
 
-### Prototype Categories
+```
+tests/test_prototype.py::test_faq PASSED
+tests/test_prototype.py::test_account_issue PASSED
+tests/test_prototype.py::test_order_issue PASSED
+tests/test_prototype.py::test_refund_issue PASSED
+tests/test_prototype.py::test_human_escalation PASSED
+tests/test_prototype.py::test_specific_order_question PASSED
+tests/test_prototype.py::test_unknown_request_escalates PASSED
 
-The MVP currently supports:
+======================== 7 passed in 0.03s ========================
+```
 
-- FAQ
-- Account Issue
-- Order Issue
-- Refund Issue
-- Human Escalation
+## 12. Deployment Strategy
+
+```
+Requirement → Prototype → Testing & Evaluation → Pilot
+    → Production → Monitoring → Continuous Improvement
+```
+
+Every phase has explicit objectives, deliverables, and exit criteria —
+including a rollback strategy so a bad AI decision never becomes a client
+incident. Full detail in [deployment-plan.md](deployment-plan.md).
+
+## 13. Future Enhancements
+
+The MVP intentionally stops at intent routing. The credible next steps:
+
+- LLM-based intent classification (replacing the rule-based keyword matcher)
+- RAG pipeline over real knowledge sources
+- Vector database for semantic retrieval
+- Live business-API integration (orders, refunds, CRM)
+- Authentication & authorization
+- Agentic orchestration across tools
+- Production observability (latency, accuracy, escalation-rate dashboards)
+- Full human-in-the-loop escalation workflow with a real ticketing system
+
+## 14. FDE Perspective
+
+The job of a Forward Deployment Engineer isn't to bolt AI onto a workflow
+because it's technically possible — it's to answer, in order:
+
+**What is the client's problem?**
+↓
+**Which parts of the workflow can safely be automated?**
+↓
+**What knowledge and systems does the AI actually need?**
+↓
+**Where must humans stay in the loop?**
+↓
+**How is this deployed, monitored, and proven to work?**
+
+Everything in this repo — `requirements.md` → `architecture.md` →
+`prototype.py` → `deployment-plan.md` — is that question chain answered
+in order, with a working artifact at the end of each step.
+
+---
+
+## Copyright
+
+© 2026 SaffronyxAI.in. All Rights Reserved.
+
+**Created by:** Mahesh Kumar, Founder & CEO of SaffronyxAI.in
+**Company:** SaffronyxAI.in

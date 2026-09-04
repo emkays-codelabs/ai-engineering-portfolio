@@ -1,3 +1,17 @@
+"""
+AI Customer Support Resolution Platform
+----------------------------------------
+Test Suite
+
+Author: Mahesh Kumar
+Founder & CEO, SaffronyxAI.in
+Copyright: (c) 2026 SaffronyxAI.in. All Rights Reserved.
+
+Original work created for SaffronyxAI.in. Unauthorized copying,
+reproduction, modification, redistribution, or commercial use is
+prohibited without prior written permission from SaffronyxAI.in.
+"""
+
 import sys
 from pathlib import Path
 

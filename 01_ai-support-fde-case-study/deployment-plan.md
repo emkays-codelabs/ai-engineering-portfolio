@@ -459,3 +459,20 @@ The goal is not simply to deploy software.
 
 The goal is to deploy a solution that works within the client's real
 business environment and produces measurable results.
+
+---
+
+## Copyright & Ownership
+
+© 2026 SaffronyxAI.in. All Rights Reserved.
+
+This project and its contents are original work created by **Mahesh Kumar,
+Founder & CEO of SaffronyxAI.in**.
+
+Unauthorized copying, reproduction, modification, redistribution, or
+commercial use of this material, in whole or in part, is prohibited without
+prior written permission from SaffronyxAI.in.
+
+**Author:** Mahesh Kumar
+**Role:** Founder & CEO
+**Company:** SaffronyxAI.in
