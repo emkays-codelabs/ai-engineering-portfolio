@@ -112,7 +112,7 @@ everything else plugs into. Given a customer question, it classifies into:
 5. **Human Escalation**
 
 No real customer data, no live APIs, no production infra — that's
-deliberate. See [§9 Future Enhancements](#13-future-enhancements) for what
+deliberate. See [§13 Future Enhancements](#13-future-enhancements) for what
 comes next.
 
 ## 8. Technology
