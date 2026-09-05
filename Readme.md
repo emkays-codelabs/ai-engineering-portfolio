@@ -27,6 +27,7 @@ monitoring) it takes to run those systems reliably in production.
 | # | Project | Description |
 |---|---|---|
 | 01 | **[AI Customer Support Resolution Platform](01_ai-support-fde-case-study)** | A Forward Deployment Engineer style engagement: client discovery, problem definition, architecture, a rule-based intent-classification MVP with automated tests, and a phased deployment plan. |
+| 02 | **[NEXORA AI Support Copilot](02_NEXORA-AI-Customer-Support-Automation-Platform)** | An end-to-end AI customer support SaaS MVP: RAG-based chatbot, agent copilot, smart ticketing with auto-assignment, and an admin console — FastAPI + Next.js backed by Supabase/pgvector, with full test coverage. |
 
 More projects will be added here as they're completed.
 
