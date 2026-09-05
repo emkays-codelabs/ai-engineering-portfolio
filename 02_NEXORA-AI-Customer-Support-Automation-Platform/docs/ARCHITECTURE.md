@@ -96,8 +96,8 @@ This document describes the high-level architecture for the AI Customer Support 
 ## Cross-Cutting Concerns
 
 - **AuthN/AuthZ:** Supabase Auth or JWT; RBAC for agents, admins, API keys; least privilege.
-- **Observability:** Structured logging (request/conversation IDs), metrics (latency, AI usage, errors), dashboards and alerts; see .cursor/rules/45-observability.mdc.
-- **Security:** No secrets in code; PII detection/masking; audit logs; secure webhooks; see .cursor/rules/70-security.mdc.
+- **Observability:** Structured logging (request/conversation IDs), metrics (latency, AI usage, errors), dashboards and alerts; see .claude/rules/45-observability.md.
+- **Security:** No secrets in code; PII detection/masking; audit logs; secure webhooks; see .claude/rules/70-security.md.
 - **Multi-tenancy:** Tenant/organization isolation in schema and RLS; tenant-scoped APIs and caches.
 
 ---
@@ -126,4 +126,4 @@ This document describes the high-level architecture for the AI Customer Support 
 - **API:** docs/API_SPEC.md  
 - **Data model:** docs/DB_SCHEMA.md  
 - **Deployment:** docs/DEPLOYMENT.md  
-- **Rules:** .cursor/rules/*.mdc
+- **Rules:** .claude/rules/*.md

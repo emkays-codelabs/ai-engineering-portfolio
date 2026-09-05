@@ -89,7 +89,7 @@ Deployment targets **AWS** for compute, storage, networking, and supporting serv
 - **Logs:** Send application logs to CloudWatch Logs; structured format (JSON); log groups per service/environment.
 - **Metrics:** CloudWatch Metrics for latency, request count, errors; custom metrics for AI usage, queue depth, ticket/conversation counts.
 - **Alarms:** Alarms for high error rate, latency, queue backlog, and critical dependency failures (e.g. Supabase, OpenAI); notify via SNS (email/Slack).
-- **Dashboards:** CloudWatch (or third-party) dashboards for traffic, errors, AI usage, and business metrics per docs/PRD and .cursor/rules/45-observability.mdc.
+- **Dashboards:** CloudWatch (or third-party) dashboards for traffic, errors, AI usage, and business metrics per docs/PRD and .claude/rules/45-observability.md.
 
 ---
 
@@ -118,4 +118,4 @@ Deployment targets **AWS** for compute, storage, networking, and supporting serv
 - **Architecture:** docs/ARCHITECTURE.md  
 - **API:** docs/API_SPEC.md  
 - **DB schema:** docs/DB_SCHEMA.md  
-- **Rules:** .cursor/rules/90-devops-docker-aws.mdc, 45-observability.mdc, 70-security.mdc
+- **Rules:** .claude/rules/90-devops-docker-aws.md, 45-observability.mdc, 70-security.mdc

@@ -8,7 +8,7 @@ AI Customer Support Copilot is an omni-channel support platform that combines Ge
 
 ## User-Facing Interfaces
 
-This product has **three** user-facing interfaces (see also .cursor/rules/12-interfaces-admin-user-mobile.mdc):
+This product has **three** user-facing interfaces (see also .claude/rules/12-interfaces-admin-user-mobile.md):
 
 | Interface | Audience | Delivery | Scope |
 |-----------|----------|----------|--------|
@@ -138,4 +138,4 @@ This product has **three** user-facing interfaces (see also .cursor/rules/12-int
 - **API:** docs/API_SPEC.md  
 - **Data model:** docs/DB_SCHEMA.md  
 - **Deployment:** docs/DEPLOYMENT.md  
-- **Rules:** .cursor/rules/*.mdc
+- **Rules:** .claude/rules/*.md

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document defines the API surface for the AI Customer Support Copilot. The backend is FastAPI (Python). **API consumers:** (1) **Admin** — web (Next.js); (2) **User interface** — web (Next.js); (3) **Native mobile app** — iOS/Android. All three use the same versioned APIs where applicable; admin-only endpoints are protected by RBAC. Third-party integrations (webhooks, SDK) also consume these APIs. See docs/PRD.md and .cursor/rules/12-interfaces-admin-user-mobile.mdc.
+This document defines the API surface for the AI Customer Support Copilot. The backend is FastAPI (Python). **API consumers:** (1) **Admin** — web (Next.js); (2) **User interface** — web (Next.js); (3) **Native mobile app** — iOS/Android. All three use the same versioned APIs where applicable; admin-only endpoints are protected by RBAC. Third-party integrations (webhooks, SDK) also consume these APIs. See docs/PRD.md and .claude/rules/12-interfaces-admin-user-mobile.md.
 
 ---
 
@@ -168,4 +168,4 @@ Filtering by tenant, time range, and channel; used by **Admin** dashboard and re
 - **Architecture:** docs/ARCHITECTURE.md  
 - **DB schema:** docs/DB_SCHEMA.md  
 - **Deployment:** docs/DEPLOYMENT.md  
-- **Rules:** .cursor/rules/10-backend-fastapi.mdc, 15-omni-channel.mdc, 95-integrations.mdc
+- **Rules:** .claude/rules/10-backend-fastapi.md, 15-omni-channel.mdc, 95-integrations.mdc

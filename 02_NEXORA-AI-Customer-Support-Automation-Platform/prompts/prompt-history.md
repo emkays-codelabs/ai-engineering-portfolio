@@ -122,3 +122,45 @@ yes
 add this projetc as 02_ in git https://github.com/emkays-codelabs/ai-engineering-portfolio
 
 ---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+waht is the na,e of project i will create repo
+
+---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+orgnaise docs better
+
+---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+yes
+
+---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+ia early refrence needed
+
+---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+what about docker files and .env
+
+---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+format read me with more infi. make it professional and eay ro undetatmnd
+
+---

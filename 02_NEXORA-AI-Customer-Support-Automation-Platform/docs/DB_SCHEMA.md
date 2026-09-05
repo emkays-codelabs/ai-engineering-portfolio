@@ -2,7 +2,7 @@
 
 ## Overview
 
-The application uses **Supabase (PostgreSQL)** as the primary data store. This document describes the logical schema for the AI Customer Support Copilot. All schema changes must be applied via migrations. Data is consumed by **Admin** (web), **User interface** (web), and **Native mobile app**; auth and RBAC scope access per interface. See docs/PRD.md and .cursor/rules/12-interfaces-admin-user-mobile.mdc.
+The application uses **Supabase (PostgreSQL)** as the primary data store. This document describes the logical schema for the AI Customer Support Copilot. All schema changes must be applied via migrations. Data is consumed by **Admin** (web), **User interface** (web), and **Native mobile app**; auth and RBAC scope access per interface. See docs/PRD.md and .claude/rules/12-interfaces-admin-user-mobile.md.
 
 ---
 
@@ -162,4 +162,4 @@ Define enums for:
 - **Architecture:** docs/ARCHITECTURE.md  
 - **API:** docs/API_SPEC.md  
 - **Deployment:** docs/DEPLOYMENT.md  
-- **Rules:** .cursor/rules/30-database-supabase.mdc
+- **Rules:** .claude/rules/30-database-supabase.md
