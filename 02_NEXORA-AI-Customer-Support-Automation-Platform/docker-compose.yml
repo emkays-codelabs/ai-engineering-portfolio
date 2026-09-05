@@ -5,6 +5,12 @@ services:
       - "8000:8000"
     env_file:
       - ./backend/.env
+    environment:
+      # Override .env's REDIS_URL (which assumes non-Docker localhost) — inside
+      # this container, "redis" is the sibling container's DNS name on the
+      # Compose network. Without this, the backend silently fails to reach
+      # Redis and runs cache-less even though the redis service is right there.
+      REDIS_URL: redis://redis:6379/0
     depends_on:
       - redis
     restart: unless-stopped

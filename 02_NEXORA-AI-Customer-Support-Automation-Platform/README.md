@@ -184,6 +184,12 @@ Then open:
   — `NEXT_PUBLIC_*` vars are baked into the client bundle at *build* time, not read at container
   startup. Changing them requires `docker compose build frontend` (or `--build`), not just
   `docker compose restart frontend`.
+- **Backend runs cache-less under Docker Compose even though the `redis` service is up** —
+  `backend/.env`'s `REDIS_URL` is written for *non-Docker* local dev (`redis://localhost:6379/0`);
+  inside the `backend` container, `localhost` means the backend container itself, not the sibling
+  `redis` container. `docker-compose.yml` already overrides this correctly to
+  `redis://redis:6379/0` (the service's DNS name on the Compose network) — if you ever remove that
+  override, Redis will silently stop being used rather than erroring (it degrades gracefully).
 
 ## Project Structure
 
