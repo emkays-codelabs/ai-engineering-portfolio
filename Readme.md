@@ -1,4 +1,4 @@
-# 🧠 AI Engineering Lab
+# 🧠 SaffronyxAI Engineering Lab
 
 A collection of end-to-end AI engineering projects by **Mahesh Kumar**,
 Founder & CEO of **SaffronyxAI.in** — covering AI architecture, GenAI,
