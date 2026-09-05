@@ -10,11 +10,25 @@ for support agents, smart ticketing with auto-assignment, and an admin console �
 from one FastAPI backend and one Next.js frontend, across three role-based interfaces
 (admin, agent, customer).
 
-**Status:** MVP — all core features implemented and tested (58 backend tests, 16 frontend routes).
-See [docs/README.md](docs/README.md) for which parts of the docs describe this MVP vs. the
-longer-term product vision.
+**Status:** MVP — all core features implemented and tested (58 backend tests, 16 frontend routes,
+verified passing). See [docs/README.md](docs/README.md) for which parts of the docs describe this
+MVP vs. the longer-term product vision.
 
 ---
+
+## What is this, in plain terms?
+
+Picture a support widget on a company's website. A customer types a question; instead of
+waiting for a human, an AI reads the company's own help docs (that's the "RAG" / knowledge
+base part) and answers immediately, with citations. If the AI can't help after a few tries,
+the conversation escalates to a human agent — who gets their own dashboard with an AI
+"copilot" that drafts suggested replies and conversation summaries for them. Behind the
+scenes, support tickets are automatically created and assigned to whichever agent has the
+lightest workload. An admin console lets a manager configure the AI, manage the knowledge
+base, and see analytics (ticket volume, resolution time, etc.).
+
+That's the whole product: one Next.js web app with three different views (admin / agent /
+customer) depending on who's logged in, talking to one FastAPI backend.
 
 ## Table of Contents
 
@@ -22,7 +36,9 @@ longer-term product vision.
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Three Interfaces, One App](#three-interfaces-one-app)
+- [Prerequisites](#prerequisites)
 - [Quickstart](#quickstart)
+- [Troubleshooting](#troubleshooting)
 - [Project Structure](#project-structure)
 - [API Overview](#api-overview)
 - [Testing](#testing)
@@ -95,26 +111,46 @@ all database access goes through tenant-scoped repositories. Full detail in
 Role-based access is enforced on both sides: `useUser(requiredRole?)` on the frontend and
 `require_role()` on the backend.
 
+## Prerequisites
+
+- **Python 3.11+** and **Node.js 20+** (this repo was tested on Node 24)
+- A **Supabase** project (free tier works) — for the Postgres database + pgvector. Sign up at
+  [supabase.com](https://supabase.com), create a project, and grab its URL and API keys from
+  Project Settings → API.
+- An **EURI API key** (Euron's OpenAI-compatible gateway) — used for chat completions and
+  embeddings. See [euron.one](https://euron.one).
+- Docker (optional) — only needed if you want Redis or the Docker Compose path.
+
 ## Quickstart
 
 ```bash
 # 1. Backend
 cd backend
 pip install -r requirements.txt
-cp .env.example .env      # fill in your Supabase + EURI credentials
+cp .env.example .env      # then fill in your Supabase + EURI credentials (see below)
 uvicorn app.main:app --reload --port 8000
 
-# 2. Frontend (separate terminal)
+# 2. Apply the database schema (one-time, in the Supabase SQL editor)
+# Paste and run, in order:
+#   backend/supabase/migrations/001_initial_schema.sql
+#   backend/supabase/migrations/002_knowledge_collections.sql
+
+# 3. Frontend (separate terminal)
 cd frontend
 npm install
 cp .env.example .env.local
 npm run dev
 
-# 3. Redis (optional — only needed for caching; the app runs fine without it)
+# 4. Redis (optional — only needed for caching; the app runs fine without it)
 docker run -p 6379:6379 redis:alpine
 ```
 
-Or bring up the whole stack with **Docker Compose**:
+**What to put in `backend/.env`:** `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+(from your Supabase project settings) and `EURI_API_KEY` (from Euron) are the only values you
+must supply yourself — everything else in `.env.example` already has a sensible default. See
+the full list in [CLAUDE.md](CLAUDE.md#environment-variables).
+
+Or bring up the whole stack with **Docker Compose** (still requires `backend/.env` filled in first):
 
 ```bash
 docker compose up --build
@@ -122,8 +158,22 @@ docker compose up --build
 
 Then open:
 - Frontend: http://localhost:3000
-- Backend docs (Swagger): http://localhost:8000/api/docs
+- Backend docs (Swagger, interactive — try endpoints from the browser): http://localhost:8000/api/docs
 - Health check: http://localhost:8000/health
+
+## Troubleshooting
+
+- **`ModuleNotFoundError` on backend startup** — you likely haven't run `pip install -r requirements.txt`
+  in this exact environment/virtualenv yet.
+- **`ValueError: password cannot be longer than 72 bytes` when hashing passwords** — this is a known
+  incompatibility between `passlib` 1.7.4 and `bcrypt` 5.x. `requirements.txt` already pins
+  `bcrypt>=4.0.1,<4.1` to avoid it; if you still hit it, run `pip install "bcrypt==4.0.1"`.
+- **`ImportError: email-validator is not installed`** — also already pinned in `requirements.txt`;
+  run `pip install -r requirements.txt` again if you installed packages individually before.
+- **Frontend can't reach the backend** — check that `NEXT_PUBLIC_API_URL` in `frontend/.env.local`
+  matches the port your backend is actually running on (default `8000`).
+- **Relation "knowledge_collections" does not exist** — you haven't run migration `002` yet; see
+  step 2 above.
 
 ## Project Structure
 

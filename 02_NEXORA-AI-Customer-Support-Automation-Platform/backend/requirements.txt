@@ -8,6 +8,10 @@ python-multipart>=0.0.18
 # Auth
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
+# passlib 1.7.4 (unmaintained since 2020) breaks under bcrypt>=4.1's new API;
+# pin to a compatible 4.x release until passlib is replaced or updated.
+bcrypt>=4.0.1,<4.1
+email-validator>=2.0.0  # required by Pydantic's EmailStr, used in schemas/auth.py
 
 # Database
 supabase>=2.13.0

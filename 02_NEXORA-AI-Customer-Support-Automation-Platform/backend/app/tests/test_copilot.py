@@ -99,7 +99,7 @@ class TestSummarize:
             )
 
         assert resp.status_code == 200
-        assert resp.json()["key_points"] == []
+        assert resp.json()["data"]["key_points"] == []
 
 
 class TestKBRetrieval:
