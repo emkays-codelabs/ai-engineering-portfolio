@@ -29,3 +29,6 @@ Thumbs.db
 
 # Video/presentation prep (not part of the published project)
 presentation/
+
+# Internal working notes (session/SSH details, not for the public repo)
+memory/
