@@ -206,3 +206,66 @@ did you write in readme how to run project
 expand me for a begijner whatr roject about etc etc hpw to run all liks to dicocs
 
 ---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+claume.md should ne ib side .claude right
+
+---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+ok go by the rules
+
+---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+what about this C:\00_AI_Architect\28._Portfolio-projects\01_NEXORA-AI-Customer-Support-Automation-Platform\docker-compose.yml
+
+---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+for backend ther is ni .env.local
+
+---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+so for eforndend aloways .env.local not .env
+
+---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+why no .env in root foldewr for this project
+
+---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+list all the rules for these to apply fir any project and also the same for docker file in front/bancked ot only yml filr when to us eawaht
+
+---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+add these detaisl in this html "C:\00_AI_Architect\06_Frontend_Engineering\project-setup.html"
+
+---
+
+### 2026-09-05 (UTC)
+[Timestamp: 2026-09-05T00:00:00Z]
+[Prompt:]
+update readme
+
+---

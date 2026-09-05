@@ -156,6 +156,12 @@ Or bring up the whole stack with **Docker Compose** (still requires `backend/.en
 docker compose up --build
 ```
 
+Both `backend/Dockerfile` and `frontend/Dockerfile` exist and are verified to build cleanly
+(`docker compose build` — exit code 0, both images). The frontend's `NEXT_PUBLIC_API_URL` /
+`NEXT_PUBLIC_WS_URL` are passed as Docker **build args** in `docker-compose.yml` (not just
+runtime `environment:`), since Next.js inlines them into the client bundle at build time —
+if you change them, rebuild with `docker compose build frontend` rather than just restarting.
+
 Then open:
 - Frontend: http://localhost:3000
 - Backend docs (Swagger, interactive — try endpoints from the browser): http://localhost:8000/api/docs
@@ -174,11 +180,16 @@ Then open:
   matches the port your backend is actually running on (default `8000`).
 - **Relation "knowledge_collections" does not exist** — you haven't run migration `002` yet; see
   step 2 above.
+- **Frontend built via Docker points at the wrong API URL, even after editing `docker-compose.yml`**
+  — `NEXT_PUBLIC_*` vars are baked into the client bundle at *build* time, not read at container
+  startup. Changing them requires `docker compose build frontend` (or `--build`), not just
+  `docker compose restart frontend`.
 
 ## Project Structure
 
 ```
 backend/            FastAPI app
+  Dockerfile          Single-stage build (pip install + uvicorn)
   app/routes/        Thin HTTP/WebSocket handlers (auth, chat, tickets, knowledge, copilot, admin, analytics, health)
   app/services/       Business logic
   app/repositories/   Tenant-scoped Supabase queries
@@ -187,6 +198,7 @@ backend/            FastAPI app
   supabase/migrations/ SQL migrations (schema + pgvector setup)
 
 frontend/            Next.js app
+  Dockerfile          Multi-stage build (deps -> builder -> runner), standalone output
   app/                admin/*, agent/*, and customer-facing routes (16 total)
   components/         Shared design-system components (ui/, layout/, chat/, tickets/, admin/)
   services/           API client wrappers, one per backend route group
