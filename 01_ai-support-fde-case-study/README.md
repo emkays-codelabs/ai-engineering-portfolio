@@ -140,8 +140,8 @@ comes next.
 ## 10. How to Run
 
 ```bash
-git clone https://github.com/emkays-codelabs/ai-support-fde-case-study.git
-cd ai-support-fde-case-study
+git clone https://github.com/emkays-codelabs/ai-engineering-portfolio.git
+cd ai-engineering-portfolio/01_ai-support-fde-case-study
 ```
 
 **Create a virtual environment**

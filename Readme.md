@@ -1,13 +1,24 @@
-# 🧭 My Portfolio Projects
+# 🧠 AI Engineering Lab
 
-A collection of end-to-end project case studies by **Mahesh Kumar**,
-Founder & CEO of **SaffronyxAI.in** — each one documents the full
-engineering lifecycle from client discovery through architecture, a
-working prototype, and a deployment plan.
+A collection of end-to-end AI engineering projects by **Mahesh Kumar**,
+Founder & CEO of **SaffronyxAI.in** — covering AI architecture, GenAI,
+agentic systems, APIs, automation, testing, and production-oriented
+deployment.
 
 ![Maintained by](https://img.shields.io/badge/maintained%20by-Mahesh%20Kumar-blue)
 ![Company](https://img.shields.io/badge/company-SaffronyxAI.in-orange)
 ![License](https://img.shields.io/badge/license-Proprietary-lightgrey)
+
+---
+
+## About SaffronyxAI.in
+
+SaffronyxAI.in builds practical, production-oriented AI solutions —
+taking real business problems and turning them into working intelligent
+systems, not just proofs of concept. The focus is on AI architecture,
+generative AI, agentic systems, backend engineering, automation, and the
+full engineering discipline (requirements, testing, deployment,
+monitoring) it takes to run those systems reliably in production.
 
 ---
 
