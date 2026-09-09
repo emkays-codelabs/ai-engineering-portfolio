@@ -21,7 +21,7 @@ Simple  →  Tool  →  Router  →  ReAct  →  Planner
 
 ## The orchestrator turns five demos into one product
 
-Rather than the user picking an architecture, `backend/app/orchestration/classifier.py` classifies the query and `orchestrator.py` dispatches automatically (`mode="auto"`). Manual mode selection remains available for direct comparison and for the video demo.
+Rather than the user picking an architecture, `backend/app/orchestration/classifier.py` classifies the query and `orchestrator.py` dispatches automatically (`mode="auto"`). Manual mode selection remains available for direct comparison.
 
 ```text
                     USER QUERY
@@ -51,6 +51,8 @@ Rather than the user picking an architecture, `backend/app/orchestration/classif
 - **Web console** (`frontend/`) — the same `/api/run` call, with a live execution trace rendered from the `AgentResult.steps` field.
 
 All three ultimately call the same `backend/app/agents/*.run(question)` functions — no logic is duplicated between them.
+
+Backend and frontend also each ship a `Dockerfile`, wired together by `docker-compose.yml` (`docker compose up --build`) — a fourth, containerized way to run the same system, not a separate implementation of it.
 
 ## Honesty as a design constraint
 

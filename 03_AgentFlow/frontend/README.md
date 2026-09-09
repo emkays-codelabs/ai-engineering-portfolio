@@ -9,7 +9,7 @@ npm install
 cp .env.example .env
 ```
 
-Set `VITE_API_URL` in `.env` to point at the running backend (defaults to `http://localhost:8000`; see the [backend setup](../README.md#6-run-the-api)).
+Set `VITE_API_URL` in `.env` to point at the running backend (defaults to `http://localhost:8000`; see the [backend setup](../README.md#backend)).
 
 ## Develop
 
