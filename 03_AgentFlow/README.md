@@ -6,36 +6,36 @@
 
 > The right agent architecture for every task.
 
-AgentFlow automatically selects and executes the right agent strategy — from direct LLM responses to tool use, routing, ReAct, and multi-step planning — and shows exactly how it solved each task.
+Most agent demos pick one execution strategy — direct answers, tool calls, iterative reasoning — and stop there. AgentFlow implements five of them side by side behind a single interface, lets an LLM classifier pick the right one automatically, and shows exactly how it got the answer: which architecture ran, which tools it called, and how long it took.
 
-This project began as a course assignment ("Build and Compare Different Agent Types") implementing five agent architectures that solve the same style of query in different ways. It has since grown into an orchestration platform: instead of the user manually choosing an architecture, a classifier analyzes the query and automatically selects the right one.
+It began as a course assignment ("Build and Compare Different Agent Types") and grew into an orchestration platform once it became clear the interesting problem wasn't building one more agent — it was deciding, per query, which agent should even run.
 
-**Related docs:** [Project Tree](PROJECT_TREE.md) · [PRD](docs/PRD.md) · [High-Level Design](docs/HLD.md) · [Low-Level Design](docs/LLD.md) · [Architecture](docs/ARCHITECTURE.md) · [Frontend README](frontend/README.md)
+**Related docs:** [PRD](docs/PRD.md) · [High-Level Design](docs/HLD.md) · [Low-Level Design](docs/LLD.md) · [Architecture](docs/ARCHITECTURE.md) · [Frontend README](frontend/README.md)
 
 ## Table of Contents
 
-- [Architectures](#architectures)
-- [Architecture at a glance](#architecture-at-a-glance)
-- [Project structure](#project-structure)
-- [Setup](#setup)
-- [Run each agent (CLI)](#run-each-agent-cli)
-- [Run the API](#run-the-api)
-- [Run the frontend](#run-the-frontend)
-- [Comparison](#comparison)
-- [Which agent should you use?](#which-agent-should-you-use)
-- [Testing — 12 prompts](#testing--12-prompts)
-- [ReAct trace](#react-trace)
-- [Planning trace](#planning-trace)
-- [Evaluation](#evaluation)
-- [Error handling and safety](#error-handling-and-safety)
-- [Video walkthrough plan](#video-walkthrough-plan)
-- [Submission checklist](#submission-checklist)
-- [Tests](#tests)
-- [Copyright & Ownership](#copyright--ownership)
+1. [Architectures](#1-architectures)
+2. [Architecture at a glance](#2-architecture-at-a-glance)
+3. [Project structure](#3-project-structure)
+4. [Setup](#4-setup)
+5. [Run each agent (CLI)](#5-run-each-agent-cli)
+6. [Run the API](#6-run-the-api)
+7. [Run the frontend](#7-run-the-frontend)
+8. [Comparison](#8-comparison)
+9. [Which agent should you use?](#9-which-agent-should-you-use)
+10. [Testing — 12 prompts](#10-testing--12-prompts)
+11. [ReAct trace](#11-react-trace)
+12. [Planning trace](#12-planning-trace)
+13. [Evaluation](#13-evaluation)
+14. [Error handling and safety](#14-error-handling-and-safety)
+15. [Video walkthrough plan](#15-video-walkthrough-plan)
+16. [Submission checklist](#16-submission-checklist)
+17. [Tests](#17-tests)
+18. [Copyright & Ownership](#18-copyright--ownership)
 
 [Back to top](#top)
 
-## Architectures
+## 1. Architectures
 
 1. **Simple** — one direct LLM call.
 2. **Tool-Using** — the model can select and call tools (calculator, web search).
@@ -43,18 +43,18 @@ This project began as a course assignment ("Build and Compare Different Agent Ty
 4. **ReAct** — explicitly demonstrates Reason → Action → Observation → Answer.
 5. **Planner** — creates a multi-step plan, executes it, and synthesizes the result.
 
-The purpose is not to claim that one architecture is universally best. The goal is to make the architectural trade-offs observable and explain when each pattern is appropriate — see [Which agent should you use?](#which-agent-should-you-use).
+The point isn't to crown one architecture "best." It's to make the trade-offs between them observable, and to say plainly when each pattern earns its complexity — see [§9, Which agent should you use?](#9-which-agent-should-you-use).
 
 [Back to top](#top)
 
-## Architecture at a glance
+## 2. Architecture at a glance
 
-All five agents use the same EURI LLM backend and share two tools:
+All five agents share the same EURI LLM backend and the same two tools:
 
 - **Calculator:** safe local arithmetic evaluator implemented with Python `ast`; it does not execute arbitrary input.
 - **Search:** live web search through Tavily.
 
-The difference is **how the agent decides what to do**:
+What differs is **how each agent decides what to do**:
 
 - Simple: answer immediately.
 - Tool Agent: let the model decide whether to call a tool.
@@ -62,7 +62,7 @@ The difference is **how the agent decides what to do**:
 - ReAct: repeatedly reason, act, observe, and continue.
 - Planner: create a plan first, execute the planned steps, then synthesize.
 
-An orchestrator sits in front of all five: given `mode="auto"`, it classifies the query and dispatches to the architecture it judges best; given an explicit mode, it dispatches directly (useful for demoing or comparing architectures side by side).
+An orchestrator sits in front of all five: given `mode="auto"`, it classifies the query and dispatches to the architecture it judges best; given an explicit mode, it dispatches directly — useful for demoing or comparing architectures side by side.
 
 ```text
                     USER QUERY
@@ -87,7 +87,7 @@ An orchestrator sits in front of all five: given `mode="auto"`, it classifies th
 
 [Back to top](#top)
 
-## Project structure
+## 3. Project structure
 
 ```text
 types-of-agents-task-2/
@@ -117,9 +117,9 @@ types-of-agents-task-2/
 
 [Back to top](#top)
 
-## Setup
+## 4. Setup
 
-### Backend
+### 4.1 Backend
 
 This project uses [uv](https://docs.astral.sh/uv/) for Python environment and dependency management.
 
@@ -140,7 +140,7 @@ TAVILY_API_KEY=your_real_tavily_key
 
 No API keys are committed to this repository.
 
-### Frontend
+### 4.2 Frontend
 
 ```bash
 cd frontend
@@ -154,7 +154,7 @@ Set `VITE_API_URL` in `frontend/.env` to point at the running backend (defaults 
 
 [Back to top](#top)
 
-## Run each agent (CLI)
+## 5. Run each agent (CLI)
 
 ```bash
 uv run cli/simple_agent.py "What is 25 * 48?"
@@ -170,7 +170,7 @@ uv run cli/planning_agent.py "Research the latest Python release and summarize t
 
 [Back to top](#top)
 
-## Run the API
+## 6. Run the API
 
 ```bash
 uv run uvicorn backend.app.main:app --reload --port 8000
@@ -184,7 +184,7 @@ uv run uvicorn backend.app.main:app --reload --port 8000
 
 [Back to top](#top)
 
-## Run the frontend
+## 7. Run the frontend
 
 ```bash
 cd frontend
@@ -195,7 +195,7 @@ Visit `http://localhost:5173` for the landing page, or `http://localhost:5173/co
 
 [Back to top](#top)
 
-## Comparison
+## 8. Comparison
 
 | Agent Type | Best Use Case | Advantage | Limitation |
 |---|---|---|---|
@@ -207,7 +207,7 @@ Visit `http://localhost:5173` for the landing page, or `http://localhost:5173/co
 
 [Back to top](#top)
 
-## Which agent should you use?
+## 9. Which agent should you use?
 
 There is no universally best agent — choose the simplest architecture that reliably solves the task.
 
@@ -222,25 +222,25 @@ Simple  →  Tool  →  Router  →  ReAct  →  Planner
 - *Research with iterative searches* → ReAct
 - *Complex multi-step analysis* → Planner
 
-### 1. Simple Agent
+### 9.1 Simple Agent
 
 Use when the query is self-contained and does not need external data or deterministic computation. Examples: explanations, definitions, rewriting, or simple conceptual questions.
 
 **Trade-off:** excellent simplicity, but it cannot reliably delegate arithmetic or live research to tools.
 
-### 2. Tool-Using Agent
+### 9.2 Tool-Using Agent
 
 Use when the assistant needs access to capabilities such as calculators, search, databases, APIs, or internal business systems. The model decides which tool to invoke and receives the tool result before answering.
 
 **Trade-off:** flexible tool selection, but the model remains responsible for choosing the correct tool.
 
-### 3. Router Agent
+### 9.3 Router Agent
 
 Use when requests fall into known categories and each category has a specialized workflow. This project uses four routes: **Math, Coding, Research, General**.
 
 **Trade-off:** easy to reason about operationally, but a bad classification can send a request down the wrong path.
 
-### 4. ReAct Agent
+### 9.4 ReAct Agent
 
 Use when the task requires iterative interaction with tools. The architecture exposes a loop:
 
@@ -252,7 +252,7 @@ This project prints the trace so the behavior can be demonstrated in the video.
 
 **Trade-off:** powerful for interactive tasks, but repeated LLM calls can increase latency and cost.
 
-### 5. Planning Agent
+### 9.5 Planning Agent
 
 Use when the task has several dependent steps. The agent first produces a structured plan, then executes each step, collects intermediate results, and performs a final synthesis.
 
@@ -260,7 +260,7 @@ Use when the task has several dependent steps. The agent first produces a struct
 
 [Back to top](#top)
 
-## Testing — 12 prompts
+## 10. Testing — 12 prompts
 
 The harness contains 12 test prompts distributed across the five architectures. Each test records:
 
@@ -277,7 +277,7 @@ uv run run_all.py
 
 Results are saved to `test_results.json` (which is intentionally ignored by Git).
 
-### Test matrix
+### 10.1 Test matrix
 
 | # | Prompt | Agent selected | Expected tool | Why suitable |
 |---:|---|---|---|---|
@@ -294,7 +294,7 @@ Results are saved to `test_results.json` (which is intentionally ignored by Git)
 | 11 | Explain why tool use can improve reliability for arithmetic questions. | Planner | LLM | Multi-step explanation and synthesis |
 | 12 | Find current information about the EURI API and summarize what it is used for. | Tool Agent | Search | Current external information |
 
-### Live result format
+### 10.2 Live result format
 
 After running the suite, paste the generated values from `test_results.json` into this section if your course requires the README to contain the exact observed outputs. A recommended format is:
 
@@ -315,7 +315,7 @@ After running the suite, paste the generated values from `test_results.json` int
 
 [Back to top](#top)
 
-## ReAct trace
+## 11. ReAct trace
 
 A successful ReAct run should visibly resemble:
 
@@ -331,7 +331,7 @@ The actual trace is generated by the model at runtime; the example above illustr
 
 [Back to top](#top)
 
-## Planning trace
+## 12. Planning trace
 
 A successful planning run should show:
 
@@ -347,13 +347,13 @@ The plan is generated as JSON and executed by the harness.
 
 [Back to top](#top)
 
-## Evaluation
+## 13. Evaluation
 
 `POST /api/benchmark` (and `uv run run_all.py`) run the 12 test prompts and report **real, measured** metrics per architecture: average latency, LLM call count, tool call count, and an estimated cost (derived from a rough tokens-per-call constant, clearly not billed cost — EURI's API doesn't expose real billing). **Accuracy is reported as `"Not yet measured"`** rather than a fabricated percentage — scoring real accuracy would require a labeled test set with expected answers, which doesn't exist yet.
 
 [Back to top](#top)
 
-## Error handling and safety
+## 14. Error handling and safety
 
 - Missing `EURI_API_KEY` raises a `ConfigurationError` (503 over the API), producing a clear message rather than a raw SDK stack trace.
 - Missing `TAVILY_API_KEY` raises the same `ConfigurationError` for search.
@@ -364,7 +364,7 @@ The plan is generated as JSON and executed by the harness.
 
 [Back to top](#top)
 
-## Video walkthrough plan
+## 15. Video walkthrough plan
 
 The YouTube walkthrough should cover:
 
@@ -377,13 +377,13 @@ The YouTube walkthrough should cover:
 7. **Comparison:** explain why a simple agent is preferable for simple tasks, while ReAct/Planner architectures are useful for more complex workflows.
 8. **Testing:** run `uv run run_all.py` and briefly show the generated results.
 
-### Suggested explanation
+### 15.1 Suggested explanation
 
 > These five agents use the same LLM and the same underlying tools, but they differ in control strategy. The Simple Agent answers directly. The Tool Agent gives the model dynamic tool access. The Router classifies first and sends the request to a specialized path. ReAct iterates through reasoning, action, and observation. The Planner creates a workflow before execution. The right architecture depends on task complexity, required control, latency, and reliability requirements.
 
 [Back to top](#top)
 
-## Submission checklist
+## 16. Submission checklist
 
 - [ ] Public GitHub repository/folder contains the project.
 - [ ] README includes the required comparison table.
@@ -396,7 +396,7 @@ The YouTube walkthrough should cover:
 
 [Back to top](#top)
 
-## Tests
+## 17. Tests
 
 ```bash
 uv run pytest -v
@@ -408,7 +408,7 @@ uv run pytest -v
 
 [Back to top](#top)
 
-## Copyright & Ownership
+## 18. Copyright & Ownership
 
 © 2026 SaffronyxAI.in. All Rights Reserved.
 
