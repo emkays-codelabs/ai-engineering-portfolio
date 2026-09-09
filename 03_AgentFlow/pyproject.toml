@@ -1,0 +1,34 @@
+# AgentFlow backend: Python project and dependency configuration (uv-managed).
+#
+# Author: Mahesh Kumar
+# Founder & CEO, SaffronyxAI.in
+# Copyright: © 2026 SaffronyxAI.in. All Rights Reserved.
+
+[project]
+name = "types-of-agents-task-2"
+version = "0.1.0"
+description = "AgentFlow: an AI agent orchestration platform that dynamically selects and executes Simple, Tool-Using, Router, ReAct, and Planning architectures, with built-in tool execution, execution tracing, and architecture evaluation."
+requires-python = ">=3.10"
+dependencies = [
+    "openai>=1.0",
+    "tavily-python>=0.5",
+    "python-dotenv>=1.0",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "httpx>=0.27",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+# Disables the .pytest_cache/ plugin entirely (no --lf/--ff support, which
+# this project doesn't rely on) so the directory is never created rather
+# than needing to be cleaned up after each run.
+addopts = "-p no:cacheprovider"

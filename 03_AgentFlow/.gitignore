@@ -1,0 +1,27 @@
+# Python
+.env
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.log
+test_results.json
+.pytest_cache/
+
+# Frontend (Vite/React) — frontend/.gitignore covers editor/OS files too
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.env
+frontend/.env.local
+
+# Tooling
+.superpowers/
+.worktrees/
+.tmp_*
+
+# Editor / OS (repo-wide; frontend/.gitignore covers frontend/ too)
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
