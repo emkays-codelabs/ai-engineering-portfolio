@@ -8,7 +8,11 @@ export default function Footer() {
       <nav className="footer__links">
         <a href="#architectures">Architectures</a>
         <a href="#evaluation">Evaluation</a>
-        <a href="https://github.com" target="_blank" rel="noreferrer">
+        <a
+          href="https://github.com/emkays-codelabs/ai-engineering-portfolio/tree/main/03_AgentFlow"
+          target="_blank"
+          rel="noreferrer"
+        >
           GitHub
         </a>
       </nav>

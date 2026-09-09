@@ -23,7 +23,7 @@ export default function CTASection() {
           Launch AgentFlow →
         </Link>
         <a
-          href="https://github.com"
+          href="https://github.com/emkays-codelabs/ai-engineering-portfolio/tree/main/03_AgentFlow"
           className="button button--secondary"
           target="_blank"
           rel="noreferrer"
