@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/saffronyxai-engineering-lab.png" alt="SaffronyxAI Engineering Lab" width="500">
+  <img src="assets/saffronyxai-engineering-lab.png" alt="SaffronyxAI Engineering Lab" width="650">
 </p>
 
 An engineering portfolio of end-to-end AI systems built by **Mahesh Kumar**,
