@@ -1,5 +1,11 @@
 # ⚙️ SaffronyxAI Engineering Lab
 
+<p align="center">
+
+![SaffronyxAI Engineering Lab](assets/saffronyxai-engineering-lab.png)
+
+</p>
+
 An engineering portfolio of end-to-end AI systems built by **Mahesh Kumar**,
 Founder & CEO of **SaffronyxAI.in** — spanning AI architecture, Generative
 AI, agentic systems, APIs, automation, evaluation, testing, and
