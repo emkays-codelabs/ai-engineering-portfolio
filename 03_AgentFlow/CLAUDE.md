@@ -6,19 +6,21 @@ Project context for Claude Code. Read this first when opening a session here.
 
 **AgentFlow** — a multi-architecture AI agent orchestration platform. Started as a course assignment ("Build and Compare Different Agent Types") implementing five agent architectures (Simple, Tool-Using, Router, ReAct, Planner); evolved into a product where an LLM classifier auto-selects the right architecture per query instead of the user choosing manually.
 
-Full details: [README.md](README.md) (start here), [PROJECT_TREE.md](PROJECT_TREE.md), [docs/PRD.md](docs/PRD.md), [docs/HLD.md](docs/HLD.md), [docs/LLD.md](docs/LLD.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+Full details: [README.md](README.md) (start here), [docs/PRD.md](docs/PRD.md), [docs/HLD.md](docs/HLD.md), [docs/LLD.md](docs/LLD.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). `PROJECT_TREE.md` still exists locally but is gitignored (not committed) — regenerate by hand if it drifts.
 
 ## Current state (as of this writing)
 
 - **Backend**: complete and tested. `backend/app/{agents,orchestration,tools,llm,evaluation,schemas}/`, FastAPI app at `backend/app/main.py`. 41 tests in `backend/tests/`, all passing, no live network calls.
-- **Frontend**: functional scaffold, not yet visually polished. `frontend/` — Vite + React, `/` (landing) and `/console` (working query interface) routes. Builds clean (`npm run build` / `node node_modules/vite/bin/vite.js build`).
+- **Frontend**: functional, not yet visually polished as a whole. `frontend/` — Vite + React, `/` (landing) and `/console` (working query interface) routes. Builds clean (`npm run build` / `node node_modules/vite/bin/vite.js build`). Verified by actually rendering it headless (Playwright screenshots), not just reading the code — found and fixed one real bug this way: the navbar had no mobile breakpoint and overflowed at narrow widths, pushing the "Launch Console" CTA off-screen (now a hamburger-collapsed menu below 720px). Broader visual design pass still pending.
+- **Docker**: built and verified. `backend/Dockerfile`, `frontend/Dockerfile` (multi-stage: Node build → nginx serve, never the Vite dev server), `docker-compose.yml` (backend :8000, frontend :8080). `docker compose up --build` confirmed working end-to-end (health check, SPA routing, real EURI network call).
 - **CLI**: `cli/*.py` — standalone terminal demos of each architecture, unaffected by frontend/API state.
-- **Not yet built**: Docker Compose, `LICENSE` (intentionally omitted — proprietary work, not open source), screenshots, visual design pass on the frontend.
+- **Not yet built**: `LICENSE` (intentionally omitted — proprietary work, not open source), screenshots, a full visual design pass on the frontend.
 
 ## Key facts to not re-derive
 
 - **Package manager**: `uv` for Python (not pip/requirements.txt — this was migrated deliberately). `npm` for the frontend.
-- **LLM backend**: EURI API (euron.one), OpenAI-SDK-compatible, via `backend/app/llm/euri_client.py`. Real API keys live in `.env` (gitignored, never commit). `EURI_API_KEY` and `TAVILY_API_KEY` are both configured and working in this local environment as of the last session.
+- **LLM backend**: EURI API (euron.one), OpenAI-SDK-compatible, via `backend/app/llm/euri_client.py`. Real API keys live in `.env` (gitignored, never commit).
+- **`.env` gotcha (caused real data loss once — do not repeat)**: never run `cp .env.example .env` (or any unconditional overwrite of `.env`) without first checking whether `.env` already has real content — `cp` overwrites silently, and `.env` is gitignored so there is no git history to recover from. This happened on 2026-09-09 while verifying Docker: the real `EURI_API_KEY`/`TAVILY_API_KEY` were destroyed and had to be re-entered by hand. If `.env` needs to exist for a check (e.g. `docker compose up`), `test -f .env || cp .env.example .env` instead.
 - **Honesty constraint (do not violate)**: evaluation metrics must be real, measured values (latency, LLM calls, tool calls, cost estimate). Accuracy must always read `"Not yet measured"` — never fabricate a percentage. This was an explicit, repeated user requirement.
 - **Branding**: "AgentFlow" / "Multi-Architecture AI Agent Orchestration Platform" / tagline "The right agent architecture for every task." Do not refer to the project by its original assignment name in user-facing copy.
 - **Authorship/copyright standard** (applies repo-wide, already applied to all original source/docs): Author Mahesh Kumar, Founder & CEO of SaffronyxAI.in, © 2026 SaffronyxAI.in. All Rights Reserved. Short header on source files, full "Copyright & Ownership" section in README/docs, short footer on PROJECT_TREE.md. Never add an open-source license (MIT/Apache/GPL/etc.) — this is proprietary work.

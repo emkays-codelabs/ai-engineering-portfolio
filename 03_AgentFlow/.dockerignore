@@ -1,0 +1,25 @@
+# Applies to the backend build context (docker-compose.yml's `context: .`).
+# Only pyproject.toml, uv.lock, and backend/ are ever COPYed by
+# backend/Dockerfile, but this keeps the build context sent to the Docker
+# daemon small and guarantees secrets never reach it.
+
+.git/
+.venv/
+.worktrees/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+.env.*
+!.env.example
+
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+
+docs/
+cli/
+test_results.json
+*.log
+.vscode/
+.idea/

@@ -47,6 +47,7 @@ code,
   gap: 1.5rem;
   padding: 1rem 2rem;
   border-bottom: 1px solid var(--border);
+  position: relative;
 }
 
 .navbar__brand {
@@ -64,10 +65,79 @@ code,
 .navbar__links a {
   text-decoration: none;
   color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .navbar__cta {
   text-decoration: none;
+  white-space: nowrap;
+}
+
+.navbar__toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.navbar__toggle span {
+  display: block;
+  height: 2px;
+  margin: 0 6px;
+  background: var(--text);
+  border-radius: 1px;
+}
+
+.navbar__cta--mobile {
+  display: none;
+}
+
+/* Below this width the link row no longer fits alongside the brand and CTA
+   (measured overflow at 390px: ~467px of content in a 390px viewport), so
+   it collapses behind the hamburger toggle instead of spilling offscreen. */
+@media (max-width: 720px) {
+  .navbar__toggle {
+    display: flex;
+  }
+
+  .navbar__cta--desktop {
+    display: none;
+  }
+
+  .navbar__links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    padding: 1rem 2rem 1.5rem;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .navbar__links--open {
+    display: flex;
+  }
+
+  .navbar__links a {
+    padding: 0.5rem 0;
+    white-space: normal;
+  }
+
+  .navbar__cta--mobile {
+    display: inline-block;
+    margin-top: 0.5rem;
+  }
 }
 
 .hero {

@@ -6,11 +6,30 @@
 
 > The right agent architecture for every task.
 
+![Maintained by](https://img.shields.io/badge/maintained%20by-Mahesh%20Kumar-blue)
+![Company](https://img.shields.io/badge/company-SaffronyxAI.in-orange)
+![Backend](https://img.shields.io/badge/backend-FastAPI%20%7C%20Python%203.10%2B-009688)
+![Frontend](https://img.shields.io/badge/frontend-React%2019%20%7C%20Vite-646cff)
+![Tests](https://img.shields.io/badge/tests-41%20passing-brightgreen)
+![Docker](https://img.shields.io/badge/docker-compose%20ready-2496ED)
+![License](https://img.shields.io/badge/license-Proprietary-lightgrey)
+
 Most agent demos pick one execution strategy — direct answers, tool calls, iterative reasoning — and stop there. AgentFlow implements five of them side by side behind a single interface, lets an LLM classifier pick the right one automatically, and shows exactly how it got the answer: which architecture ran, which tools it called, and how long it took.
 
-It began as a course assignment ("Build and Compare Different Agent Types") and grew into an orchestration platform once it became clear the interesting problem wasn't building one more agent — it was deciding, per query, which agent should even run.
+The interesting problem isn't building one more agent — it's deciding, per query, which agent should even run. AgentFlow's orchestrator makes that decision automatically and exposes the reasoning behind it, instead of asking the user to pick an architecture up front.
 
 **Related docs:** [PRD](docs/PRD.md) · [High-Level Design](docs/HLD.md) · [Low-Level Design](docs/LLD.md) · [Architecture](docs/ARCHITECTURE.md) · [Frontend README](frontend/README.md)
+
+## Quick start — four ways to run this
+
+| Goal | Command | Details |
+|---|---|---|
+| Run one architecture from a terminal | `uv run cli/simple_agent.py "What is 25 * 48?"` | [§5](#5-run-each-agent-cli) |
+| Run the full HTTP API | `uv run uvicorn backend.app.main:app --reload --port 8000` | [§6](#6-run-the-api) |
+| Use the interactive web console | `cd frontend && npm install && npm run dev` | [§7](#7-run-the-frontend) |
+| Run backend + frontend as containers | `docker compose up --build` | [§4.3](#43-docker-optional) |
+
+All four call into the same `backend/app/agents/*.run(question)` functions underneath — no logic is duplicated between the CLI, the API, and the frontend. Each option needs `.env` set up first — see [§4, Setup](#4-setup).
 
 ## Table of Contents
 
@@ -28,10 +47,9 @@ It began as a course assignment ("Build and Compare Different Agent Types") and 
 12. [Planning trace](#12-planning-trace)
 13. [Evaluation](#13-evaluation)
 14. [Error handling and safety](#14-error-handling-and-safety)
-15. [Video walkthrough plan](#15-video-walkthrough-plan)
-16. [Submission checklist](#16-submission-checklist)
-17. [Tests](#17-tests)
-18. [Copyright & Ownership](#18-copyright--ownership)
+15. [System walkthrough](#15-system-walkthrough)
+16. [Tests](#16-tests)
+17. [Copyright & Ownership](#17-copyright--ownership)
 
 [Back to top](#top)
 
@@ -90,7 +108,7 @@ An orchestrator sits in front of all five: given `mode="auto"`, it classifies th
 ## 3. Project structure
 
 ```text
-types-of-agents-task-2/
+agentflow/
 ├── backend/
 │   ├── app/
 │   │   ├── main.py                 # FastAPI app: /api/run, /api/benchmark, /api/health
@@ -101,19 +119,23 @@ types-of-agents-task-2/
 │   │   ├── llm/                     # EURI (OpenAI-compatible) client wrapper
 │   │   ├── evaluation/              # benchmark harness + real latency/cost metrics
 │   │   └── schemas/                 # Pydantic request/response models
-│   └── tests/                       # 41 tests, no live network calls
+│   ├── tests/                        # 41 tests, no live network calls
+│   └── Dockerfile                    # backend container (uv + Uvicorn)
 ├── cli/                              # thin standalone wrappers over backend.app.agents
 ├── frontend/                          # React + Vite landing page and console UI
-│   └── src/{components,pages,services,hooks,data}/
-├── docs/superpowers/{specs,plans}/    # design specs and implementation plans
+│   ├── src/{components,pages,services,hooks,data}/
+│   ├── Dockerfile                    # multi-stage: Node build -> nginx serve
+│   └── nginx.conf                    # SPA fallback so client-side routes survive a refresh
+├── docs/{PRD,HLD,LLD,ARCHITECTURE}.md, docs/superpowers/{specs,plans}/
 ├── run_all.py                         # runs the 12-prompt benchmark, writes test_results.json
+├── docker-compose.yml                 # wires backend (:8000) + frontend (:8080) together
 ├── pyproject.toml, uv.lock            # Python deps, managed with uv
 ├── .env.example
-├── .gitignore
+├── .gitignore, .dockerignore
 └── README.md
 ```
 
-`backend/app/agents/` holds the five agent implementations as plain functions (`run(question) -> AgentResult`). `backend/app/llm/` holds the shared EURI client wrapper, and `backend/app/tools/` holds the calculator/search tools and the tool-call registry they use. `backend/app/orchestration/` classifies and dispatches a question to the right agent, `backend/app/evaluation/` runs the benchmark suite, and `backend/app/main.py` exposes it all over HTTP through FastAPI. `cli/` holds thin command-line wrappers so each agent can still be run standalone from a terminal. `frontend/` is the React landing page and console UI that talks to the API.
+`backend/app/agents/` holds the five agent implementations as plain functions (`run(question) -> AgentResult`). `backend/app/llm/` holds the shared EURI client wrapper, and `backend/app/tools/` holds the calculator/search tools and the tool-call registry they use. `backend/app/orchestration/` classifies and dispatches a question to the right agent, `backend/app/evaluation/` runs the benchmark suite, and `backend/app/main.py` exposes it all over HTTP through FastAPI. `cli/` holds thin command-line wrappers so each agent can still be run standalone from a terminal. `frontend/` is the React landing page and console UI that talks to the API. Both `backend/` and `frontend/` also ship a `Dockerfile` so either can run as a container — see [§4.3](#43-docker-optional).
 
 [Back to top](#top)
 
@@ -150,7 +172,18 @@ cp .env.example .env
 
 Set `VITE_API_URL` in `frontend/.env` to point at the running backend (defaults to `http://localhost:8000`).
 
-> **Windows note:** if your project path contains an `&` (as this course's default path does), `npm run <script>` may fail with `'...' is not recognized as an internal or external command` — a `cmd.exe` quirk with `&` in paths, not a project bug. Work around it with `node node_modules/vite/bin/vite.js <dev|build>` instead of `npm run dev` / `npm run build`, or move the project to a path without `&`.
+> **Windows note:** if your project path contains an `&`, `npm run <script>` may fail with `'...' is not recognized as an internal or external command` — a `cmd.exe` quirk with `&` in paths, not a project bug. Work around it with `node node_modules/vite/bin/vite.js <dev|build>` instead of `npm run dev` / `npm run build`, or move the project to a path without `&`.
+
+### 4.3 Docker (optional)
+
+Both services also run as containers — the frontend build is multi-stage (Node → static bundle served by nginx, never the Vite dev server), and no API key ever reaches either image; they're injected at container runtime.
+
+```bash
+cp .env.example .env   # fill in your real EURI_API_KEY / TAVILY_API_KEY
+docker compose up --build
+```
+
+Frontend: `http://localhost:8080` · Backend: `http://localhost:8000`. This is an alternative to the `uv run` / `npm run dev` flow above, not a replacement for it — local development doesn't require Docker.
 
 [Back to top](#top)
 
@@ -248,7 +281,7 @@ Use when the task requires iterative interaction with tools. The architecture ex
 Reason → Action → Observation → Reason → ... → Answer
 ```
 
-This project prints the trace so the behavior can be demonstrated in the video.
+This project prints the trace so the reasoning is visible, not just the final answer.
 
 **Trade-off:** powerful for interactive tasks, but repeated LLM calls can increase latency and cost.
 
@@ -296,7 +329,7 @@ Results are saved to `test_results.json` (which is intentionally ignored by Git)
 
 ### 10.2 Live result format
 
-After running the suite, paste the generated values from `test_results.json` into this section if your course requires the README to contain the exact observed outputs. A recommended format is:
+After running the suite, paste the generated values from `test_results.json` into this section for a fully reproducible record of observed output. A recommended format is:
 
 | # | Agent selected | Tool used | Final output | Why suitable |
 |---:|---|---|---|---|
@@ -364,39 +397,26 @@ The plan is generated as JSON and executed by the harness.
 
 [Back to top](#top)
 
-## 15. Video walkthrough plan
+## 15. System walkthrough
 
-The YouTube walkthrough should cover:
+What to look at, per architecture, to see the control flow in action:
 
-1. **Architecture:** explain the five agent patterns and their control flow.
-2. **Simple Agent live demo:** show a direct question and one LLM call.
-3. **Tool Agent live demo:** show a calculation or current-information query and the selected tool.
-4. **ReAct live demo:** show the visible Reason → Action → Observation → Answer trace.
-5. **Planning Agent:** show the generated plan and execution stages.
-6. **Router:** explain the Math/Coding/Research/General classification and dispatch.
-7. **Comparison:** explain why a simple agent is preferable for simple tasks, while ReAct/Planner architectures are useful for more complex workflows.
-8. **Testing:** run `uv run run_all.py` and briefly show the generated results.
+1. **Architecture overview:** the five agent patterns and how they differ in control flow — see [§1](#1-architectures) and [§2](#2-architecture-at-a-glance).
+2. **Simple Agent:** a direct question, answered in one LLM call.
+3. **Tool Agent:** a calculation or current-information query, showing dynamic tool selection.
+4. **ReAct:** the visible Reason → Action → Observation → Answer loop — see [§11](#11-react-trace).
+5. **Planning Agent:** a generated plan, its execution, and the final synthesis — see [§12](#12-planning-trace).
+6. **Router:** the Math/Coding/Research/General classification and dispatch.
+7. **Comparison:** why a simple agent suits simple tasks while ReAct/Planner earn their overhead on complex ones — see [§9](#9-which-agent-should-you-use).
+8. **Evaluation:** `uv run run_all.py` against the 12-prompt suite, with the resulting metrics — see [§13](#13-evaluation).
 
-### 15.1 Suggested explanation
+### 15.1 One-paragraph pitch
 
-> These five agents use the same LLM and the same underlying tools, but they differ in control strategy. The Simple Agent answers directly. The Tool Agent gives the model dynamic tool access. The Router classifies first and sends the request to a specialized path. ReAct iterates through reasoning, action, and observation. The Planner creates a workflow before execution. The right architecture depends on task complexity, required control, latency, and reliability requirements.
-
-[Back to top](#top)
-
-## 16. Submission checklist
-
-- [ ] Public GitHub repository/folder contains the project.
-- [ ] README includes the required comparison table.
-- [ ] At least 10 prompts are tested and documented with agent, tool, output, and rationale.
-- [ ] YouTube video explains all five architectures.
-- [ ] At least three agents are demonstrated live.
-- [ ] Video explains where each architecture is best used.
-- [ ] Video explains why one architecture can be better than another for a given task.
-- [ ] No API keys are committed.
+> These five agents share the same LLM and the same tools, but differ in control strategy. Simple answers directly. Tool gives the model dynamic tool access. Router classifies first and dispatches to a specialized path. ReAct iterates through reasoning, action, and observation. Planner builds a workflow before executing it. The right architecture depends on task complexity, the control you need over execution, and your latency/reliability budget.
 
 [Back to top](#top)
 
-## 17. Tests
+## 16. Tests
 
 ```bash
 uv run pytest -v
@@ -408,7 +428,7 @@ uv run pytest -v
 
 [Back to top](#top)
 
-## 18. Copyright & Ownership
+## 17. Copyright & Ownership
 
 © 2026 SaffronyxAI.in. All Rights Reserved.
 

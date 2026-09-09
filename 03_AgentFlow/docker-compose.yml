@@ -1,0 +1,41 @@
+# AgentFlow: backend (FastAPI) + frontend (React, built and served by nginx)
+# as two independent containers.
+#
+# Usage:
+#   cp .env.example .env   # fill in EURI_API_KEY / TAVILY_API_KEY
+#   docker compose up --build
+#
+# Frontend: http://localhost:8080  ·  Backend: http://localhost:8000
+#
+# Author: Mahesh Kumar
+# Founder & CEO, SaffronyxAI.in
+# Copyright: © 2026 SaffronyxAI.in. All Rights Reserved.
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      # Frontend is served on :8080 in this compose file (see below); the
+      # Vite dev server's :5173 origin is kept too so `npm run dev` against
+      # a Dockerized backend still works without editing this file.
+      AGENTFLOW_CORS_ORIGINS: http://localhost:5173,http://localhost:8080
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Resolved by the browser, not by the frontend container, so this
+        # must be the backend's host-mapped port above.
+        VITE_API_URL: http://localhost:8000
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
