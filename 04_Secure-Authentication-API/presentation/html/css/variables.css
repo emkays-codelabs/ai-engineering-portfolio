@@ -1,0 +1,30 @@
+:root {
+  /* Real values from presentation/pdf-style-guide.md Section 2 — never redefined here */
+  --sx-obsidian: #050301;
+  --sx-saffron: #F97316;
+  --sx-gold: #EAB308;
+  --sx-cream: #FDBA74;
+  --sx-offwhite: #FFF7ED;
+
+  --text-primary: #1a1a1a;
+  --text-secondary: #5a5a52;
+  --text-on-dark: #FFF7ED;
+  --text-on-dark-muted: #c9bfae;
+  --border: #e5ddd0;
+  --border-on-dark: #3a352c;
+
+  --success: #16a34a;
+  --danger: #dc2626;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 40px;
+  --space-5: 64px;
+
+  --font-body: "Inter", "Aptos", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Cascadia Code", "Consolas", monospace;
+}

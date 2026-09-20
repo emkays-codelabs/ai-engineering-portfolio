@@ -1,0 +1,49 @@
+[project]
+name = "secure-authentication-api"
+version = "0.1.0"
+description = "Production-grade JWT authentication service (FastAPI) with RBAC and refresh-token rotation"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.32,<1.0",
+    "pydantic>=2.9,<3.0",
+    "pydantic-settings>=2.6,<3.0",
+    "email-validator>=2.2,<3.0",
+    "sqlalchemy>=2.0,<3.0",
+    "alembic>=1.14,<2.0",
+    "psycopg[binary]>=3.2,<4.0",
+    "uuid6>=2024.7,<2026.0",
+    "passlib[bcrypt]>=1.7,<2.0",
+    # passlib 1.7.4 (unmaintained) breaks with bcrypt>=4.1 (removed `__about__`,
+    # and bcrypt now hard-errors past 72 bytes instead of silently truncating
+    # during passlib's internal self-test) — pin bcrypt to the last known-good line.
+    "bcrypt>=4.0,<4.1",
+    "pyjwt>=2.9,<3.0",
+    "python-multipart>=0.0.12",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3,<9.0",
+    "pytest-asyncio>=0.24,<1.0",
+    "httpx>=0.27,<1.0",
+    "httpx2>=2.13,<3.0",
+    "ruff>=0.7,<1.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["migrations/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI's dependency-injection pattern requires Depends(...)/Query(...)/etc. as
+# argument defaults — that's the framework's API, not the bug B008 usually catches.
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path", "fastapi.Body"]

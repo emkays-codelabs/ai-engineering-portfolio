@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Secure Authentication API — Technical Presentation</title>
+<link rel="stylesheet" href="css/variables.css" />
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/layout.css" />
+<link rel="stylesheet" href="css/components.css" />
+<link rel="stylesheet" href="css/slides.css" />
+<link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+
+<div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill"></div></div>
+
+<div class="stage-wrapper">
+  <div class="stage">
+
+    <!-- 1. Cover -->
+    <section class="slide active" id="slide-cover">
+      <div class="slide-content">
+        <div class="corp-brand" data-reveal>SaffronyxAI.in</div>
+        <h1 class="project-name" data-reveal>Secure Authentication API</h1>
+        <p class="project-subtitle" data-reveal>
+          A JWT authentication service implementing what most tutorials skip — refresh-token
+          rotation with reuse-rejection, server-side-only RBAC, and a documented token-transport
+          decision. Technical Presentation.
+        </p>
+        <div class="cover-meta" data-reveal>Version 1.0 · 2026-09-20 · Prepared by Mahesh Kumar, Founder &amp; CEO, SaffronyxAI.in</div>
+        <div class="tagline" data-reveal>Designing Intelligent Systems That Last</div>
+      </div>
+    </section>
+
+    <!-- 2. Problem -->
+    <section class="slide" id="slide-problem">
+      <header class="slide-header"><span>SaffronyxAI.in</span><span>Secure Authentication API</span></header>
+      <div class="slide-content">
+        <div class="eyebrow" data-reveal><span class="num">01</span> · BUSINESS PROBLEM</div>
+        <h2 class="slide-title" data-reveal>What Most Auth Tutorials Skip</h2>
+        <p class="slide-subtitle" data-reveal>Three questions most "add JWT auth" guides never answer.</p>
+        <div class="col-list">
+          <div class="card" data-reveal>What happens when a stolen refresh token gets replayed?</div>
+          <div class="card" data-reveal>Can a client self-assign the Admin role at registration?</div>
+          <div class="card" data-reveal>Where does the refresh token live in the browser — and why does that matter for XSS exposure?</div>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>© 2026 SaffronyxAI.in</span></footer>
+    </section>
+
+    <!-- 3. Solution / Architecture -->
+    <section class="slide" id="slide-architecture">
+      <header class="slide-header"><span>SaffronyxAI.in</span><span>Secure Authentication API</span></header>
+      <div class="slide-content">
+        <div class="eyebrow" data-reveal><span class="num">02</span> · ARCHITECTURE</div>
+        <h2 class="slide-title" data-reveal>Real Request Flow</h2>
+        <p class="slide-subtitle" data-reveal>One-directional dependency flow — api/ → services/ → repositories/ (rules/15-backend-structure.md)</p>
+        <div class="arrow-flow">
+          <div class="flow-box" data-reveal>React SPA</div><div class="flow-arrow" data-reveal>→</div>
+          <div class="flow-box" data-reveal>FastAPI routes</div><div class="flow-arrow" data-reveal>→</div>
+          <div class="flow-box" data-reveal>services</div><div class="flow-arrow" data-reveal>→</div>
+          <div class="flow-box" data-reveal>repositories</div><div class="flow-arrow" data-reveal>→</div>
+          <div class="flow-box" data-reveal>PostgreSQL</div>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>© 2026 SaffronyxAI.in</span></footer>
+    </section>
+
+    <!-- 4. Tech Stack -->
+    <section class="slide" id="slide-stack">
+      <header class="slide-header"><span>SaffronyxAI.in</span><span>Secure Authentication API</span></header>
+      <div class="slide-content">
+        <div class="eyebrow" data-reveal><span class="num">03</span> · TECHNOLOGY STACK</div>
+        <h2 class="slide-title" data-reveal>What, and Why</h2>
+        <div class="col-list">
+          <div class="card" data-reveal><strong>Backend</strong> — FastAPI, Pydantic v2, SQLAlchemy 2.0, Alembic</div>
+          <div class="card" data-reveal><strong>Security</strong> — bcrypt (passlib), PyJWT, OAuth2 Password Flow — see ADR-0001</div>
+          <div class="card" data-reveal><strong>Frontend</strong> — React 18, TypeScript, Vite, React Router 7</div>
+          <div class="card" data-reveal><strong>Database</strong> — PostgreSQL 16 (deploy), SQLite (test)</div>
+          <div class="card" data-reveal><strong>Infra</strong> — Docker + Docker Compose, GitHub Actions</div>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>© 2026 SaffronyxAI.in</span></footer>
+    </section>
+
+    <!-- 5. Core Workflow -->
+    <section class="slide" id="slide-workflow">
+      <header class="slide-header"><span>SaffronyxAI.in</span><span>Secure Authentication API</span></header>
+      <div class="slide-content">
+        <div class="eyebrow" data-reveal><span class="num">04</span> · CORE WORKFLOW</div>
+        <h2 class="slide-title" data-reveal>End to End</h2>
+        <div class="step-list">
+          <div class="step-item" data-reveal><span class="step-num">1</span>Register — bcrypt hash, role hardcoded to USER</div>
+          <div class="step-item" data-reveal><span class="step-num">2</span>Login — OAuth2 Password Flow</div>
+          <div class="step-item" data-reveal><span class="step-num">3</span>access_token (body) + refresh_token (HttpOnly cookie)</div>
+          <div class="step-item" data-reveal><span class="step-num">4</span>Protected call — Authorization: Bearer &lt;access_token&gt;</div>
+          <div class="step-item" data-reveal><span class="step-num">5</span>Access token expires (15 min) → POST /auth/refresh</div>
+          <div class="step-item" data-reveal><span class="step-num">6</span>Old refresh jti blacklisted, new pair issued</div>
+          <div class="step-item" data-reveal><span class="step-num">7</span>Logout — jti blacklisted, cookie cleared</div>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>© 2026 SaffronyxAI.in</span></footer>
+    </section>
+
+    <!-- 6. Key Implementation Detail 1: Refresh Rotation -->
+    <section class="slide" id="slide-code-refresh">
+      <header class="slide-header"><span>SaffronyxAI.in</span><span>Secure Authentication API</span></header>
+      <div class="slide-content">
+        <div class="eyebrow" data-reveal><span class="num">05</span> · KEY IMPLEMENTATION DETAIL</div>
+        <h2 class="slide-title" data-reveal>Refresh Rotation + Reuse Rejection</h2>
+        <p class="slide-subtitle" data-reveal>backend/app/services/token_service.py</p>
+        <pre class="code-block" data-reveal>def refresh(self, refresh_token: str) -> tuple[str, str, str]:
+    try:
+        payload = decode_token(refresh_token)
+    except jwt.PyJWTError as exc:
+        raise InvalidRefreshTokenError() from exc
+
+    if payload.get("type") != "refresh":
+        raise InvalidRefreshTokenError()
+
+    jti = payload["jti"]
+    if self._token_repo.is_blacklisted(jti):
+        raise InvalidRefreshTokenError()  # reuse/replay rejected
+
+    ...
+    self._token_repo.blacklist(jti=jti, ...)  # revoke before issuing new
+    return self.issue_tokens(user)</pre>
+      </div>
+      <footer class="slide-footer"><span>© 2026 SaffronyxAI.in</span></footer>
+    </section>
+
+    <!-- 7. Key Implementation Detail 2: RBAC -->
+    <section class="slide" id="slide-code-rbac">
+      <header class="slide-header"><span>SaffronyxAI.in</span><span>Secure Authentication API</span></header>
+      <div class="slide-content">
+        <div class="eyebrow" data-reveal><span class="num">06</span> · KEY IMPLEMENTATION DETAIL</div>
+        <h2 class="slide-title" data-reveal>RBAC — Server-Side, Every Request</h2>
+        <p class="slide-subtitle" data-reveal>backend/app/core/dependencies.py</p>
+        <pre class="code-block" data-reveal>def get_current_user(
+    token: str = Depends(_oauth2_scheme),
+    auth_service: AuthService = Depends(get_auth_service),
+) -> User:
+    return auth_service.get_current_user(token)  # re-fetches live DB row
+
+
+def get_current_admin_user(user: User = Depends(get_current_user)) -> User:
+    require_role(user, Role.ADMIN)  # never trusts the JWT claim alone
+    return user</pre>
+      </div>
+      <footer class="slide-footer"><span>© 2026 SaffronyxAI.in</span></footer>
+    </section>
+
+    <!-- 8. Security -->
+    <section class="slide" id="slide-security">
+      <header class="slide-header"><span>SaffronyxAI.in</span><span>Secure Authentication API</span></header>
+      <div class="slide-content">
+        <div class="eyebrow" data-reveal><span class="num">07</span> · SECURITY</div>
+        <h2 class="slide-title" data-reveal>Trust Boundaries</h2>
+        <div class="two-col">
+          <div class="card" data-reveal>
+            <strong>Untrusted: Browser JS</strong>
+            <p style="margin-top:12px;color:var(--text-on-dark-muted)">Holds: access_token only — in memory, never localStorage</p>
+          </div>
+          <div class="card" data-reveal style="border-color:var(--sx-saffron)">
+            <strong>Trust boundary: API</strong>
+            <p style="margin-top:12px;color:var(--text-on-dark-muted)">Validates sig/alg/exp/type/sub on every request. Re-derives role from the live DB row — see ADR-0002.</p>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>© 2026 SaffronyxAI.in</span></footer>
+    </section>
+
+    <!-- 9. Testing -->
+    <section class="slide" id="slide-testing">
+      <header class="slide-header"><span>SaffronyxAI.in</span><span>Secure Authentication API</span></header>
+      <div class="slide-content">
+        <div class="eyebrow" data-reveal><span class="num">08</span> · TESTING</div>
+        <h2 class="slide-title" data-reveal>Built Test-First</h2>
+        <p class="slide-subtitle" data-reveal>Every test watched to fail before it was watched to pass — see rules/04-testing-quality.md</p>
+        <div class="stat-row">
+          <div data-reveal="scale"><div class="metric" data-count-to="80">0</div><div class="metric-label">Backend tests</div></div>
+          <div data-reveal="scale"><div class="metric" data-count-to="21">0</div><div class="metric-label">Frontend tests</div></div>
+          <div data-reveal="scale"><div class="metric" data-count-to="101">0</div><div class="metric-label">Total, all green</div></div>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>© 2026 SaffronyxAI.in</span></footer>
+    </section>
+
+    <!-- 10. Observability -->
+    <section class="slide" id="slide-observability">
+      <header class="slide-header"><span>SaffronyxAI.in</span><span>Secure Authentication API</span></header>
+      <div class="slide-content">
+        <div class="eyebrow" data-reveal><span class="num">09</span> · OBSERVABILITY</div>
+        <h2 class="slide-title" data-reveal>Real Readiness Check</h2>
+        <pre class="code-block" data-reveal>GET /health → 200 {"status": "ok"}</pre>
+        <p class="slide-subtitle" style="margin-top:24px" data-reveal>Verifies a real DB query, not just process liveness. A full metrics dashboard was <strong>NOT</strong> built — disclosed limitation, not hidden.</p>
+      </div>
+      <footer class="slide-footer"><span>© 2026 SaffronyxAI.in</span></footer>
+    </section>
+
+    <!-- 11. Demo Walkthrough -->
+    <section class="slide" id="slide-demo">
+      <header class="slide-header"><span>SaffronyxAI.in</span><span>Secure Authentication API</span></header>
+      <div class="slide-content">
+        <div class="eyebrow" data-reveal><span class="num">10</span> · LIVE / DEMO WALKTHROUGH</div>
+        <h2 class="slide-title" data-reveal>Real Captured Output</h2>
+        <p class="slide-subtitle" data-reveal>From a live run against Docker + PostgreSQL — see presentation/demo-flow.md</p>
+        <div class="col-list">
+          <pre class="code-block" data-reveal>POST /auth/login → 200 {access_token} + Set-Cookie: refresh_token (HttpOnly, SameSite=Strict)</pre>
+          <pre class="code-block" data-reveal>POST /auth/login (wrong password) → 401 {"code": "INVALID_CREDENTIALS"}</pre>
+          <pre class="code-block" data-reveal>GET /admin/users (as regular user) → 403 {"code": "INSUFFICIENT_ROLE"}</pre>
+          <pre class="code-block" data-reveal>POST /auth/refresh (after logout) → 401 {"code": "INVALID_REFRESH_TOKEN"}</pre>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>© 2026 SaffronyxAI.in</span></footer>
+    </section>
+
+    <!-- 12. Challenges -->
+    <section class="slide" id="slide-challenges">
+      <header class="slide-header"><span>SaffronyxAI.in</span><span>Secure Authentication API</span></header>
+      <div class="slide-content">
+        <div class="eyebrow" data-reveal><span class="num">11</span> · CHALLENGES &amp; TRADE-OFFS</div>
+        <h2 class="slide-title" data-reveal>A Real Bug, Found by TDD</h2>
+        <div class="two-col">
+          <div class="card" data-reveal style="border-color:var(--danger)">
+            <strong style="color:#f87171">Before</strong>
+            <p style="margin-top:12px">passlib 1.7.4 + bcrypt 5.0 → <code>ValueError: password cannot be longer than 72 bytes</code> during passlib's own internal self-test</p>
+          </div>
+          <div class="card" data-reveal style="border-color:var(--success)">
+            <strong style="color:#4ade80">After</strong>
+            <p style="margin-top:12px">Pinned <code>bcrypt&lt;4.1</code> — task.md required passlib specifically, so it wasn't dropped</p>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>© 2026 SaffronyxAI.in</span></footer>
+    </section>
+
+    <!-- 13. Results -->
+    <section class="slide" id="slide-results">
+      <header class="slide-header"><span>SaffronyxAI.in</span><span>Secure Authentication API</span></header>
+      <div class="slide-content">
+        <div class="eyebrow" data-reveal><span class="num">12</span> · RESULTS</div>
+        <h2 class="slide-title" data-reveal>Measured, Not Estimated</h2>
+        <div class="stat-row">
+          <div data-reveal="scale"><div class="metric" data-count-to="101">0</div><div class="metric-label">Tests passing</div></div>
+          <div data-reveal="scale"><div class="metric" data-count-to="0">0</div><div class="metric-label">Lint errors</div></div>
+        </div>
+        <p class="slide-subtitle" style="margin-top:24px" data-reveal>Load testing has <strong>not yet been performed</strong> — stated explicitly, not estimated.</p>
+      </div>
+      <footer class="slide-footer"><span>© 2026 SaffronyxAI.in</span></footer>
+    </section>
+
+    <!-- 14. Roadmap -->
+    <section class="slide" id="slide-roadmap">
+      <header class="slide-header"><span>SaffronyxAI.in</span><span>Secure Authentication API</span></header>
+      <div class="slide-content">
+        <div class="eyebrow" data-reveal><span class="num">13</span> · FUTURE ROADMAP</div>
+        <h2 class="slide-title" data-reveal>Disclosed, Not Hidden</h2>
+        <div class="col-list">
+          <div class="card" data-reveal><span class="badge not-implemented">NOT IMPLEMENTED</span>&nbsp; Rate limiting on auth endpoints</div>
+          <div class="card" data-reveal><span class="badge not-implemented">NOT IMPLEMENTED</span>&nbsp; Scheduled cleanup of expired revocation records</div>
+          <div class="card" data-reveal><span class="badge not-implemented">NOT IMPLEMENTED</span>&nbsp; SECRET_KEY rotation mechanism</div>
+          <div class="card" data-reveal><span class="badge not-implemented">NOT IMPLEMENTED</span>&nbsp; Admin-provisioning endpoint</div>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>© 2026 SaffronyxAI.in</span></footer>
+    </section>
+
+    <!-- 15. Closing -->
+    <section class="slide" id="slide-closing">
+      <div class="slide-content">
+        <h2 class="slide-title" data-reveal style="font-size:56px">Secure Authentication API</h2>
+        <p style="font-size:26px;color:var(--success)" data-reveal>101/101 tests passing · verified live against Docker + PostgreSQL</p>
+        <div class="corp-brand" style="margin-top:32px" data-reveal>SaffronyxAI.in</div>
+        <div class="tagline" data-reveal>Designing Intelligent Systems That Last</div>
+        <div class="cover-meta" style="margin-top:16px" data-reveal>Mahesh Kumar, Founder &amp; CEO, SaffronyxAI.in</div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<nav class="nav-bar" aria-label="Presentation navigation">
+  <button class="nav-btn" id="nav-prev" aria-label="Previous slide">‹</button>
+  <span class="slide-counter" id="slide-counter">01 / 15</span>
+  <div class="progress-dots" id="progress-dots"></div>
+  <button class="nav-btn" id="nav-next" aria-label="Next slide">›</button>
+  <button class="nav-btn" id="nav-fullscreen" aria-label="Toggle fullscreen">⛶</button>
+</nav>
+
+<script type="module" src="js/presentation.js"></script>
+</body>
+</html>

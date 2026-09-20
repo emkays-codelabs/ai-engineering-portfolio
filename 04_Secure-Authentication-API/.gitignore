@@ -1,0 +1,43 @@
+# Governance template (vendored, has its own git history — not this project's own source)
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+frontend/build/
+.vite/
+
+# Remotion — regenerate via `npm run render` in presentation/remotion/
+presentation/remotion/out/
+presentation/remotion/.cache/
+
+# Environment / secrets
+.env
+.env.local
+*.env
+!.env.example
+
+# Database
+*.db
+*.sqlite3
+
+# Docker
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
