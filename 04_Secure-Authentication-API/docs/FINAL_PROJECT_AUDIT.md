@@ -134,14 +134,47 @@ limitations stated in advance (not discovered live), and a clear final outcome
 
 ## Presentation / Portfolio Audit (P2)
 
-- **Remotion video**: rendered (`presentation/remotion/out/presentation.mp4`, verified exit
-  code 0), content traced to real artifacts per `presentation/storyboard.md`'s own
-  "Verified?" column.
-- **HTML deck**: 15 slides, verified to serve with zero broken asset/import references.
-- **Portfolio material**: not yet generated — correctly sequenced *after* this audit, per
-  `rules/10-portfolio-resume.md`.
+- **Remotion video**: rebuilt to a 10-chapter, 40-minute structure per user direction
+  (`presentation/storyboard.md`) with a corporate spread-grid layout (`SlideFrame.tsx`)
+  replacing the earlier centered-column design. **Rendered and verified, not inferred**:
+  `ffprobe` confirms `duration=2400.000000s` (exactly 40:00), `h264`, `1920x1080`,
+  `nb_frames=72000`. Composition ID and output filename follow the episode-naming convention
+  in `presentation/youtube/series-manifest.md`.
+- **HTML deck**: rebuilt to exactly 10 chapter sections matching the video, same spread-grid
+  layout principle. Verified to serve with zero broken asset/import references, section
+  open/close tags matched (10/10).
+- **YouTube series manifest**: single-episode (`EP 01`) manifest created — scoped down from a
+  proposed multi-episode structure after clarifying that this project produces one video, not
+  a series.
+- **Portfolio material**: generated after the original audit passed, per
+  `rules/10-portfolio-resume.md` (`docs/portfolio/`, 5 files).
 
 **Result**: PASS for what's in scope at this gate.
+
+## Addendum — Post-Rebuild Re-Audit (same date, later pass)
+
+This session rebuilt both presentation deliverables (above) and added frontend branding
+(`frontend/src/styles/`, `components/AuthLayout.tsx`/`AppLayout.tsx` — the frontend had zero
+CSS before this pass). Rather than assume nothing broke, re-ran live verification:
+
+- `docker compose up --build` → both containers healthy → full 11-point API smoke test
+  (register, login, invalid login, protected route with/without token, refresh rotation, RBAC
+  403, logout, post-logout refresh rejection) — **11/11 passed**.
+- Frontend dev server started against that live backend; `main.tsx` confirmed transforming
+  cleanly through Vite (no build error) — visual confirmation not possible (no browser
+  automation available in this environment), stated explicitly rather than implied.
+- Backend suite re-run fresh: 80/80 passed, lint clean (unchanged this session, re-confirmed
+  rather than assumed stable).
+- Frontend suite re-run after the branding pass: 21/21 passed (no test assertions changed —
+  only markup/CSS classes were added), `tsc -b` clean, `vite build` succeeds, 0 ESLint errors.
+
+**New finding from this pass**: the CI workflow (`.github/workflows/backend-ci.yml`) lives at
+`04_Secure-Authentication-API/.github/workflows/` inside the `ai-engineering-portfolio`
+monorepo — GitHub Actions only scans a repository's **root** `.github/workflows/` directory,
+not a subfolder's. As currently placed, this workflow will **never trigger**, regardless of
+how correct its contents are. This supersedes the original audit's "push and confirm it
+passes" next step, which is not achievable without relocating the workflow — see Next Steps
+below.
 
 ## Specialized Checklist Verification
 
@@ -157,7 +190,7 @@ the Documentation Audit above. GenAI/RAG/Agentic/Evaluation checklists are N/A.
 | No scheduled cleanup of `token_blacklist` | Table grows unbounded over long-term operation | Add a scheduled job pruning rows past `expires_at`, if this moves beyond a submission project |
 | No `SECRET_KEY` rotation | A compromised key invalidates every session to fix | Add `kid`-header + keyset support (PyJWT supports this without a library change) |
 | No admin-provisioning endpoint | Promoting a user requires direct DB access | Add an explicit, audited admin-provisioning route if this project grows real users |
-| CI (`F2`) never actually run | Correctness of the workflow YAML is reasoned, not proven | Push to a GitHub remote and observe a real run |
+| CI (`F2`) placed in a monorepo subfolder | GitHub Actions never scans `<subfolder>/.github/workflows/` — it will not trigger as currently placed, not just "unproven" | Either move `.github/workflows/backend-ci.yml` to the monorepo's actual root with a `paths:` filter scoped to `04_Secure-Authentication-API/**`, or accept it as reference-only config for this subfolder-hosted submission |
 | No load testing | Scale characteristics genuinely unknown | Out of scope for a submission-sized project; would need to happen before any production use |
 | ESLint HMR warning on `AuthContext.tsx` | Cosmetic dev-experience only | Non-blocking; would split the file only if this project grows a second context |
 
@@ -167,10 +200,15 @@ recorded during the work itself (see the relevant `TASK_TRACKER.md` rows for exa
 ## Next Steps (Concrete)
 
 1. Create `backend/.env` from `.env.example` if not already done, for anyone standing this up fresh.
-2. Push to a GitHub remote and confirm `.github/workflows/backend-ci.yml` actually passes.
-3. Record the YouTube demo (`H2`) — every scenario it needs is already verified working (see `presentation/demo-flow.md`).
+2. **Relocate or scope the CI workflow** — it currently cannot trigger from inside a monorepo
+   subfolder (see Addendum above). Move it to the portfolio repo's real root with a `paths:`
+   filter, or explicitly document it as reference-only for this submission.
+3. Record the YouTube demo (`H2`) — every scenario it needs is already verified working (see
+   `presentation/demo-flow.md`), including the render/duration validation for `EP 01`.
 4. Submit (`H3`).
-5. Generate portfolio material (`rules/10-portfolio-resume.md`) — now unblocked, since this audit has passed.
+5. ~~Generate portfolio material~~ — done (`docs/portfolio/`).
+6. If a thumbnail is ever needed for `EP 01`, generate one — `presentation/youtube/series-manifest.md`
+   currently discloses this as not yet created rather than fabricating a placeholder.
 
 
 ---

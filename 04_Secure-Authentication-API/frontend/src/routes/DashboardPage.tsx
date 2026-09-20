@@ -1,29 +1,42 @@
-import { Link, useNavigate } from "react-router-dom";
-
+import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
 
 export function DashboardPage() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  async function handleLogout() {
-    await logout();
-    navigate("/login");
-  }
+  const { user } = useAuth();
 
   return (
-    <main>
-      <h1>Dashboard</h1>
+    <AppLayout>
+      <p className="page-eyebrow">Account</p>
+      <h1 className="page-title">Dashboard</h1>
+
       {user && (
-        <dl>
-          <dt>Email</dt>
-          <dd>{user.email}</dd>
-          <dt>Role</dt>
-          <dd>{user.role}</dd>
-        </dl>
+        <section className="card">
+          <dl className="detail-grid">
+            <div>
+              <dt>Email</dt>
+              <dd>{user.email}</dd>
+            </div>
+            <div>
+              <dt>Role</dt>
+              <dd>
+                <span className={`tag ${user.role === "admin" ? "tag--admin" : ""}`}>{user.role}</span>
+              </dd>
+            </div>
+            <div>
+              <dt>Status</dt>
+              <dd>
+                <span className={`tag ${user.is_active ? "tag--active" : ""}`}>
+                  {user.is_active ? "Active" : "Inactive"}
+                </span>
+              </dd>
+            </div>
+            <div>
+              <dt>User ID</dt>
+              <dd style={{ fontFamily: "var(--font-mono)", fontSize: 14 }}>{user.id}</dd>
+            </div>
+          </dl>
+        </section>
       )}
-      {user?.role === "admin" && <Link to="/admin">Admin: view all users</Link>}
-      <button onClick={handleLogout}>Log out</button>
-    </main>
+    </AppLayout>
   );
 }

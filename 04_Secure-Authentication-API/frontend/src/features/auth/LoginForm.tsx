@@ -24,30 +24,40 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      {error && <p role="alert">{error}</p>}
+    <form className="form" onSubmit={handleSubmit} noValidate>
+      {error && (
+        <p className="alert" role="alert">
+          {error}
+        </p>
+      )}
 
-      <label htmlFor="login-email">Email</label>
-      <input
-        id="login-email"
-        type="email"
-        autoComplete="username"
-        required
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-      />
+      <div>
+        <label htmlFor="login-email">Email</label>
+        <input
+          id="login-email"
+          type="email"
+          autoComplete="username"
+          placeholder="you@example.com"
+          required
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+        />
+      </div>
 
-      <label htmlFor="login-password">Password</label>
-      <input
-        id="login-password"
-        type="password"
-        autoComplete="current-password"
-        required
-        value={password}
-        onChange={(event) => setPassword(event.target.value)}
-      />
+      <div>
+        <label htmlFor="login-password">Password</label>
+        <input
+          id="login-password"
+          type="password"
+          autoComplete="current-password"
+          placeholder="••••••••"
+          required
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+      </div>
 
-      <button type="submit" disabled={submitting}>
+      <button type="submit" className="btn btn--primary" disabled={submitting}>
         {submitting ? "Logging in…" : "Log in"}
       </button>
     </form>

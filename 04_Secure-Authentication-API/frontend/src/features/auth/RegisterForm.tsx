@@ -32,31 +32,41 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      {error && <p role="alert">{error}</p>}
+    <form className="form" onSubmit={handleSubmit} noValidate>
+      {error && (
+        <p className="alert" role="alert">
+          {error}
+        </p>
+      )}
 
-      <label htmlFor="register-email">Email</label>
-      <input
-        id="register-email"
-        type="email"
-        autoComplete="username"
-        required
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-      />
+      <div>
+        <label htmlFor="register-email">Email</label>
+        <input
+          id="register-email"
+          type="email"
+          autoComplete="username"
+          placeholder="you@example.com"
+          required
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+        />
+      </div>
 
-      <label htmlFor="register-password">Password</label>
-      <input
-        id="register-password"
-        type="password"
-        autoComplete="new-password"
-        required
-        minLength={MIN_PASSWORD_LENGTH}
-        value={password}
-        onChange={(event) => setPassword(event.target.value)}
-      />
+      <div>
+        <label htmlFor="register-password">Password</label>
+        <input
+          id="register-password"
+          type="password"
+          autoComplete="new-password"
+          placeholder="At least 8 characters"
+          required
+          minLength={MIN_PASSWORD_LENGTH}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+      </div>
 
-      <button type="submit" disabled={submitting}>
+      <button type="submit" className="btn btn--primary" disabled={submitting}>
         {submitting ? "Registering…" : "Register"}
       </button>
     </form>

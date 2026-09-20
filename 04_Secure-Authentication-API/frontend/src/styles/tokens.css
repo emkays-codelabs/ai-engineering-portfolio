@@ -1,0 +1,39 @@
+/* SaffronyxAI.in brand tokens — same palette as presentation/pdf-style-guide.md §2 and
+   presentation/html/css/variables.css. Never redefine these per-component. */
+:root {
+  --sx-obsidian: #050301;
+  --sx-saffron: #f97316;
+  --sx-gold: #eab308;
+  --sx-cream: #fdba74;
+  --sx-offwhite: #fff7ed;
+
+  --surface-0: #050301;
+  --surface-1: #12100c;
+  --surface-2: #1b1712;
+  --border: #302921;
+  --border-strong: #463c2f;
+
+  --text-primary: #fff7ed;
+  --text-secondary: #b8ab98;
+  --text-muted: #8a8073;
+
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.1);
+  --success: #4ade80;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+  --space-6: 64px;
+
+  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "Cascadia Code", "Consolas", ui-monospace, monospace;
+
+  --shadow-card: 0 18px 48px rgba(0, 0, 0, 0.45);
+}

@@ -1,15 +1,17 @@
 import { interpolate, useCurrentFrame } from "remotion";
 
-import { container, theme } from "../theme";
+import { SlideFrame } from "../SlideFrame";
+import { theme } from "../theme";
 
 interface CodeSceneProps {
   title: string;
   filename: string;
   code: string;
   explanation: string;
+  chapter?: string;
 }
 
-export function CodeScene({ title, filename, code, explanation }: CodeSceneProps) {
+export function CodeScene({ title, filename, code, explanation, chapter = "CH 05" }: CodeSceneProps) {
   const frame = useCurrentFrame();
   const codeOpacity = interpolate(frame, [0, 15], [0, 1], { extrapolateRight: "clamp" });
   const explanationOpacity = interpolate(frame, [40, 60], [0, 1], {
@@ -18,21 +20,27 @@ export function CodeScene({ title, filename, code, explanation }: CodeSceneProps
   });
 
   return (
-    <div style={{ ...container, alignItems: "stretch", justifyContent: "flex-start", paddingTop: 60 }}>
-      <h2 style={{ fontSize: 38, marginBottom: 8 }}>{title}</h2>
-      <p style={{ fontSize: 18, color: theme.colors.textMuted, marginBottom: 20 }}>{filename}</p>
+    <SlideFrame chapter={chapter}>
+      <div style={{ fontSize: 16, color: theme.colors.primary, letterSpacing: "0.12em", marginBottom: 12 }}>
+        05 · CODE WALKTHROUGH
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 20 }}>
+        <h2 style={{ fontSize: 34, margin: 0 }}>{title}</h2>
+        <span style={{ fontSize: 16, color: theme.colors.textMuted, fontFamily: theme.font.mono }}>{filename}</span>
+      </div>
       <pre
         style={{
           opacity: codeOpacity,
           backgroundColor: theme.colors.panel,
           border: `1px solid ${theme.colors.border}`,
           borderRadius: 10,
-          padding: 24,
+          padding: 28,
           fontSize: 18,
           fontFamily: theme.font.mono,
           color: theme.colors.text,
           overflow: "hidden",
           whiteSpace: "pre",
+          flex: 1,
         }}
       >
         {code}
@@ -40,13 +48,13 @@ export function CodeScene({ title, filename, code, explanation }: CodeSceneProps
       <p
         style={{
           opacity: explanationOpacity,
-          fontSize: 22,
-          color: theme.colors.success,
-          marginTop: 24,
+          fontSize: 20,
+          color: theme.colors.gold,
+          marginTop: 20,
         }}
       >
-        {explanation}
+        → {explanation}
       </p>
-    </div>
+    </SlideFrame>
   );
 }

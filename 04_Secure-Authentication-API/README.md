@@ -273,8 +273,9 @@ Manual demo verification checklist and walkthrough: see task `H1` in
 | Security Review | Controls implemented + disclosed limitations | [docs/SECURITY.md](docs/SECURITY.md) |
 | ADR-0001 | JWT library choice | [adr/0001-jwt-library-choice.md](adr/0001-jwt-library-choice.md) |
 | ADR-0002 | Token transport & refresh-rotation strategy | [adr/0002-token-transport-and-refresh-rotation.md](adr/0002-token-transport-and-refresh-rotation.md) |
-| Presentation (video) | Storyboard + real Remotion project, rendered | [presentation/remotion/](presentation/remotion/) |
-| Presentation (HTML deck) | 15-slide management deck | [presentation/html/](presentation/html/) |
+| Presentation (video) | EP 01 — 10-chapter, 40-minute Remotion video, rendered + duration-verified via `ffprobe` | [presentation/remotion/](presentation/remotion/) |
+| Presentation (HTML deck) | EP 01 — 10-chapter management deck, matching structure | [presentation/html/](presentation/html/) |
+| YouTube episode manifest | Single-episode (EP 01) series manifest, naming convention | [presentation/youtube/series-manifest.md](presentation/youtube/series-manifest.md) |
 | Final Project Audit | 13-category gate-10 audit, disclosed gaps + next steps | [docs/FINAL_PROJECT_AUDIT.md](docs/FINAL_PROJECT_AUDIT.md) |
 | Task Board | Full task history with verification evidence per task | `.claude/project/TASK_TRACKER.md` |
 

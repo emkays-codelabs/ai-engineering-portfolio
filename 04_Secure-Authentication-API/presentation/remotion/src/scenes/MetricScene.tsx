@@ -1,6 +1,7 @@
 import { interpolate, useCurrentFrame } from "remotion";
 
-import { container, theme } from "../theme";
+import { SlideFrame } from "../SlideFrame";
+import { theme } from "../theme";
 
 interface Metric {
   label: string;
@@ -8,13 +9,24 @@ interface Metric {
   suffix?: string;
 }
 
-export function MetricScene({ heading, metrics, note }: { heading: string; metrics: Metric[]; note?: string }) {
+interface MetricSceneProps {
+  heading: string;
+  metrics: Metric[];
+  note?: string;
+  chapter?: string;
+  eyebrow?: string;
+}
+
+export function MetricScene({ heading, metrics, note, chapter = "CH 06", eyebrow = "TESTING & QUALITY" }: MetricSceneProps) {
   const frame = useCurrentFrame();
 
   return (
-    <div style={container}>
-      <h2 style={{ fontSize: 44, marginBottom: 50 }}>{heading}</h2>
-      <div style={{ display: "flex", gap: 60 }}>
+    <SlideFrame chapter={chapter}>
+      <div style={{ fontSize: 16, color: theme.colors.primary, letterSpacing: "0.12em", marginBottom: 12 }}>
+        {eyebrow}
+      </div>
+      <h2 style={{ fontSize: 44, margin: "0 0 60px" }}>{heading}</h2>
+      <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
         {metrics.map((metric, i) => {
           const start = i * 10;
           const progress = interpolate(frame, [start, start + 40], [0, 1], {
@@ -23,28 +35,36 @@ export function MetricScene({ heading, metrics, note }: { heading: string; metri
           });
           const displayed = Math.round(metric.value * progress);
           return (
-            <div key={metric.label} style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 64, color: theme.colors.success, fontWeight: 700 }}>
+            <div
+              key={metric.label}
+              style={{
+                flex: 1,
+                borderLeft: `3px solid ${theme.colors.primary}`,
+                paddingLeft: 28,
+                marginRight: 32,
+              }}
+            >
+              <div style={{ fontSize: 88, color: theme.colors.primary, fontWeight: 700, lineHeight: 1 }}>
                 {displayed}
                 {metric.suffix ?? ""}
               </div>
-              <div style={{ fontSize: 20, color: theme.colors.textMuted, marginTop: 8 }}>{metric.label}</div>
+              <div style={{ fontSize: 20, color: theme.colors.textMuted, marginTop: 14 }}>{metric.label}</div>
             </div>
           );
         })}
       </div>
+      <div style={{ flex: 1 }} />
       {note && (
         <p
           style={{
-            marginTop: 50,
             fontSize: 20,
-            color: theme.colors.textMuted,
-            opacity: interpolate(frame, [70, 90], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
+            color: theme.colors.gold,
+            opacity: interpolate(frame, [60, 85], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
           }}
         >
           {note}
         </p>
       )}
-    </div>
+    </SlideFrame>
   );
 }

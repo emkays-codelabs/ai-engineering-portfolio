@@ -17,6 +17,7 @@ node_modules/
 frontend/dist/
 frontend/build/
 .vite/
+*.tsbuildinfo
 
 # Remotion — regenerate via `npm run render` in presentation/remotion/
 presentation/remotion/out/

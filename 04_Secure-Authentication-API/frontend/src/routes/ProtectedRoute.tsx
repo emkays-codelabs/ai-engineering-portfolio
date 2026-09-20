@@ -6,7 +6,7 @@ export function ProtectedRoute() {
   const { status } = useAuth();
 
   if (status === "loading") {
-    return <p>Loading…</p>;
+    return <p className="state-msg">Loading…</p>;
   }
   if (status === "unauthenticated") {
     return <Navigate to="/login" replace />;

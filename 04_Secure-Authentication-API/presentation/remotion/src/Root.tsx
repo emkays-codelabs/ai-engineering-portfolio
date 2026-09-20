@@ -2,12 +2,14 @@ import { Composition } from "remotion";
 
 import { Presentation } from "./Presentation";
 
-const TOTAL_DURATION_IN_FRAMES = 16800; // 560s @ 30fps ≈ 9.3 min — see storyboard.md
+// 72000 frames @ 30fps = exactly 2400s = 40:00 — chapter budget in presentation/storyboard.md.
+const TOTAL_DURATION_IN_FRAMES = 72000;
 
+// Composition ID matches the stable episode ID in presentation/youtube/series-manifest.md.
 export function RemotionRoot() {
   return (
     <Composition
-      id="Presentation"
+      id="ep01-secure-authentication-api"
       component={Presentation}
       durationInFrames={TOTAL_DURATION_IN_FRAMES}
       fps={30}

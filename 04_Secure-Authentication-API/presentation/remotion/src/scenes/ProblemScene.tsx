@@ -1,26 +1,32 @@
 import { interpolate, useCurrentFrame } from "remotion";
 
-import { container, theme } from "../theme";
+import { SlideFrame } from "../SlideFrame";
+import { theme } from "../theme";
 
 interface ProblemSceneProps {
   heading: string;
   points: string[];
+  chapter?: string;
+  eyebrow?: string;
 }
 
-export function ProblemScene({ heading, points }: ProblemSceneProps) {
+export function ProblemScene({ heading, points, chapter = "CH 01", eyebrow = "01 · BUSINESS PROBLEM" }: ProblemSceneProps) {
   const frame = useCurrentFrame();
 
   return (
-    <div style={container}>
-      <h2 style={{ fontSize: 48, color: theme.colors.text, marginBottom: 40 }}>{heading}</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 900 }}>
+    <SlideFrame chapter={chapter}>
+      <div style={{ fontSize: 16, color: theme.colors.primary, letterSpacing: "0.12em", marginBottom: 12 }}>
+        {eyebrow}
+      </div>
+      <h2 style={{ fontSize: 48, color: theme.colors.text, margin: "0 0 48px" }}>{heading}</h2>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 32, flex: 1, alignContent: "start" }}>
         {points.map((point, i) => {
           const start = 15 + i * 15;
           const opacity = interpolate(frame, [start, start + 15], [0, 1], {
             extrapolateLeft: "clamp",
             extrapolateRight: "clamp",
           });
-          const x = interpolate(frame, [start, start + 15], [-30, 0], {
+          const y = interpolate(frame, [start, start + 15], [20, 0], {
             extrapolateLeft: "clamp",
             extrapolateRight: "clamp",
           });
@@ -29,20 +35,19 @@ export function ProblemScene({ heading, points }: ProblemSceneProps) {
               key={point}
               style={{
                 opacity,
-                transform: `translateX(${x}px)`,
-                fontSize: 28,
-                color: theme.colors.textMuted,
-                display: "flex",
-                alignItems: "center",
-                gap: 16,
+                transform: `translateY(${y}px)`,
+                background: theme.colors.panel,
+                border: `1px solid ${theme.colors.border}`,
+                borderRadius: 12,
+                padding: 28,
               }}
             >
-              <span style={{ color: theme.colors.danger, fontSize: 32 }}>?</span>
-              {point}
+              <div style={{ color: theme.colors.primary, fontSize: 40, marginBottom: 16 }}>?</div>
+              <div style={{ fontSize: 22, color: theme.colors.text, lineHeight: 1.4 }}>{point}</div>
             </div>
           );
         })}
       </div>
-    </div>
+    </SlideFrame>
   );
 }

@@ -1,6 +1,7 @@
 import { interpolate, useCurrentFrame } from "remotion";
 
-import { container, theme } from "../theme";
+import { SlideFrame } from "../SlideFrame";
+import { theme } from "../theme";
 
 const STEPS = [
   "Register — bcrypt hash, role hardcoded to USER",
@@ -12,50 +13,53 @@ const STEPS = [
   "Logout — jti blacklisted, cookie cleared",
 ];
 
-export function WorkflowScene() {
+export function WorkflowScene({ chapter = "CH 03" }: { chapter?: string }) {
   const frame = useCurrentFrame();
+  const left = STEPS.slice(0, 4);
+  const right = STEPS.slice(4);
 
   return (
-    <div style={container}>
-      <h2 style={{ fontSize: 44, marginBottom: 40 }}>Core Workflow — End to End</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, width: 900 }}>
-        {STEPS.map((step, i) => {
-          const start = i * 22;
-          const opacity = interpolate(frame, [start, start + 15], [0, 1], {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
-          });
-          return (
-            <div
-              key={step}
-              style={{
-                opacity,
-                display: "flex",
-                alignItems: "center",
-                gap: 20,
-                fontSize: 24,
-              }}
-            >
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: "50%",
-                  backgroundColor: theme.colors.primary,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 18,
-                  flexShrink: 0,
-                }}
-              >
-                {i + 1}
-              </div>
-              <span style={{ color: theme.colors.text }}>{step}</span>
-            </div>
-          );
-        })}
+    <SlideFrame chapter={chapter}>
+      <div style={{ fontSize: 16, color: theme.colors.primary, letterSpacing: "0.12em", marginBottom: 12 }}>
+        CORE WORKFLOW
       </div>
-    </div>
+      <h2 style={{ fontSize: 44, margin: "0 0 48px" }}>End to End</h2>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px 48px", flex: 1, alignContent: "start" }}>
+        {[left, right].map((col, colIdx) => (
+          <div key={colIdx} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {col.map((step, i) => {
+              const idx = colIdx === 0 ? i : i + left.length;
+              const start = idx * 20;
+              const opacity = interpolate(frame, [start, start + 15], [0, 1], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              });
+              return (
+                <div key={step} style={{ opacity, display: "flex", alignItems: "flex-start", gap: 18, fontSize: 22 }}>
+                  <div
+                    style={{
+                      width: 34,
+                      height: 34,
+                      borderRadius: "50%",
+                      backgroundColor: theme.colors.primary,
+                      color: theme.colors.bg,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 16,
+                      fontWeight: 700,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {idx + 1}
+                  </div>
+                  <span style={{ color: theme.colors.text, lineHeight: 1.35 }}>{step}</span>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </SlideFrame>
   );
 }
