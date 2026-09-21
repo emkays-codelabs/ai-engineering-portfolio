@@ -193,21 +193,117 @@ the Documentation Audit above. GenAI/RAG/Agentic/Evaluation checklists are N/A.
 | CI (`F2`) placed in a monorepo subfolder | GitHub Actions never scans `<subfolder>/.github/workflows/` — it will not trigger as currently placed, not just "unproven" | Either move `.github/workflows/backend-ci.yml` to the monorepo's actual root with a `paths:` filter scoped to `04_Secure-Authentication-API/**`, or accept it as reference-only config for this subfolder-hosted submission |
 | No load testing | Scale characteristics genuinely unknown | Out of scope for a submission-sized project; would need to happen before any production use |
 | ESLint HMR warning on `AuthContext.tsx` | Cosmetic dev-experience only | Non-blocking; would split the file only if this project grows a second context |
+| Rendered Remotion video is stale vs. its own source (Addendum 2) | Viewers of the current `.mp4` won't see the 3 clarifications added to the source after it was rendered | Re-render once explicitly greenlit — held deliberately, not forgotten |
+| `presentation/` untracked from git (Addendum 2) | A fresh clone of this repo won't have the presentation deliverables at all | Intentional per explicit instruction; documented in README §16 rather than left implicit |
 
 None of the above were discovered by a reviewer after the fact — all were identified and
 recorded during the work itself (see the relevant `TASK_TRACKER.md` rows for exact evidence).
 
+## Addendum 2 — Deep Re-Audit (2026-09-21)
+
+Requested as a full re-verification against the real, current filesystem/git state — not a
+restatement of the previous addendum. Every command below was actually run this pass.
+
+### Re-run evidence
+
+```
+$ uv run pytest tests/ -v          (backend, from backend/)  → 82 passed, 1 warning, 38.79s
+$ uv run ruff check .              (backend)                 → All checks passed!
+$ node ./node_modules/vitest/vitest.mjs run   (frontend)      → 5 files, 21 tests passed, 53.91s
+$ node ./node_modules/eslint/bin/eslint.js .  (frontend)      → 0 errors, 1 warning (unchanged, documented)
+$ node ./node_modules/typescript/bin/tsc -b   (frontend)      → exit 0, no output
+$ docker compose config --quiet                                → exit 0, valid
+$ git status --short                                            → clean (working tree matches HEAD)
+```
+
+**Test count correction**: the total is **82 backend + 21 frontend = 103**, not the 80+21=101
+figure the original audit and README both stated. Two tests were added this session for the
+refresh-rotation concurrency fix below (`test_blacklist_raises_on_duplicate_jti_without_corrupting_the_session`,
+`test_refresh_rejects_gracefully_on_a_concurrent_redemption_race`). **Fixed in README.md
+§8/§12.1 this pass** — the stale 80/101 figures were a real documentation-accuracy defect, not
+a rounding choice.
+
+### New work since Addendum 1, verified
+
+1. **Refresh-token rotation concurrency fix** — a real bug, not a hypothetical. An external
+   review correctly identified that `TokenService.refresh()`'s revoke-then-issue ordering
+   (`docs/LLD.md` §5) prevented *logical* double-redemption but did nothing about a genuine
+   race: two requests presenting the same refresh token could both pass the blacklist check
+   before either committed its revocation. Reproduced live: the RED test hit
+   `sqlalchemy.exc.PendingRollbackError`, confirming the failure mode was real, not
+   theoretical. Fixed at two layers —
+   `backend/app/repositories/token_repository.py`'s `blacklist()` now catches the
+   `IntegrityError` from the DB-level `unique=True` constraint on `token_blacklist.jti` and
+   rolls back so the session stays usable; `backend/app/services/token_service.py`'s
+   `refresh()` catches that re-raised `IntegrityError` and translates it into the same
+   `InvalidRefreshTokenError` every other rejection path produces. Both new tests pass;
+   `docs/LLD.md` §5 updated this pass to describe the actual mechanism instead of the
+   ordering-only argument the review correctly challenged.
+2. **HTML deck rebuilt to 20 slides, single self-contained file** — the deck was rewritten from
+   a 10-chapter modular structure (separate `index.html` + `css/`/`js/`, requiring a local HTTP
+   server because `js/presentation.js` loaded as an ES module, which `file://` origins block
+   via CORS) to a 20-slide structure, then consolidated into one file
+   (`presentation/html/Secure Authentication API.html`) with every CSS rule and all JS inlined
+   and converted from ES modules to a classic script — opens via plain double-click, verified
+   with zero `<link>`/`<script src>` references remaining (`grep` confirmed) and exactly 20
+   matched `<section class="slide">` open/close tags. The old modular files were deleted after
+   confirming the standalone file was the sole file going forward (explicit user decision).
+3. **`presentation/` removed from git tracking** — 44 files `git rm --cached`'d (kept on disk,
+   `.gitignore` now excludes the whole folder) per explicit instruction. **This is a real
+   documentation-accuracy consequence, not just a housekeeping note**: `README.md` §16
+   previously linked `presentation/remotion/` and `presentation/html/` as resolvable
+   repo-relative links — those links will 404 for anyone who clones this repository fresh,
+   since the folder is no longer versioned. **Fixed this pass**: §16's table now states these
+   paths are local-only and not part of the git repo, rather than presenting them as
+   resolvable links.
+4. **Video render is now stale relative to its own source** — verified by comparing file
+   timestamps: `presentation/remotion/out/Saffronyx_Secure-Authentication-API_EP01_Full-Technical-Walkthrough.mp4`
+   is dated `2026-09-20 15:11`; `src/scenes/WorkflowScene.tsx` and `src/scenes/SecurityScene.tsx`
+   were modified `2026-09-20 23:53` (later) to add three on-screen clarifications (OAuth2 ROPC
+   caveat, logout-revocation scope, refresh-cookie CSRF detail) responding to the same external
+   review. The rendered `.mp4` therefore does **not** contain those clarifications yet. Re-render
+   has been deliberately held per an explicit standing instruction ("don't rerender now") — this
+   is a disclosed, intentional gap, not an oversight, but it means the video and its own source
+   are currently out of sync. **Fixed this pass**: README §16/§17 now say so explicitly instead
+   of implying the rendered video matches current source.
+5. **This audit's own test-count and presentation-links inaccuracies** were themselves findings
+   of this pass — evidence that a "final" audit still needs periodic re-verification against
+   live commands, not just trusted as permanently accurate once written (the premise of this
+   addendum's own existence).
+
+### Unchanged from Addendum 1 (re-confirmed, not re-litigated)
+
+- The CI-workflow-in-subfolder gap (`.github/workflows/backend-ci.yml` won't trigger from
+  inside the monorepo's subfolder) is unchanged and still open — no action taken on it this
+  pass, matching the standing "disclosed gap, not yet asked to fix" status.
+- `backend/.env` exists locally (verified `test -f`); `backend/.env.example` present and in
+  sync in shape.
+- Docker/deployment claims unchanged — not re-exercised live this pass (no `docker compose up`
+  was run this session), so those specific claims rest on Addendum 1's evidence, not this one.
+
+### Result
+
+**PASS**, with the corrections above applied in place (README.md, docs/LLD.md) rather than
+left for a future pass — per Rule 11's "disclose gaps, don't hide them" and "evidence over
+assertion," a stale number or a link that would 404 on clone counts as a real defect once
+found, not a acceptable rounding.
+
 ## Next Steps (Concrete)
 
-1. Create `backend/.env` from `.env.example` if not already done, for anyone standing this up fresh.
+1. ~~Create `backend/.env` from `.env.example`~~ — done, verified present (Addendum 2).
 2. **Relocate or scope the CI workflow** — it currently cannot trigger from inside a monorepo
-   subfolder (see Addendum above). Move it to the portfolio repo's real root with a `paths:`
-   filter, or explicitly document it as reference-only for this submission.
-3. Record the YouTube demo (`H2`) — every scenario it needs is already verified working (see
-   `presentation/demo-flow.md`), including the render/duration validation for `EP 01`.
-4. Submit (`H3`).
-5. ~~Generate portfolio material~~ — done (`docs/portfolio/`).
-6. If a thumbnail is ever needed for `EP 01`, generate one — `presentation/youtube/series-manifest.md`
+   subfolder (see Addendum 1). Move it to the portfolio repo's real root with a `paths:`
+   filter, or explicitly document it as reference-only for this submission. Still open.
+3. **Re-render the Remotion video** once given the go-ahead — the source (`Presentation.tsx`,
+   `WorkflowScene.tsx`, `SecurityScene.tsx`) now includes 3 clarifications the current rendered
+   `.mp4` does not (Addendum 2). `npm run render` (or the underlying
+   `remotion-cli.js render ep01-secure-authentication-api ...` command) from
+   `presentation/remotion/`.
+4. Record the YouTube demo (`H2`) — from the re-rendered video, so the on-screen content matches
+   the current, clarification-updated source.
+5. Submit (`H3`).
+6. ~~Generate portfolio material~~ — done (`docs/portfolio/`).
+7. If a thumbnail is ever needed for `EP 01`, generate one — `presentation/youtube/series-manifest.md`
    currently discloses this as not yet created rather than fabricating a placeholder.
 
 

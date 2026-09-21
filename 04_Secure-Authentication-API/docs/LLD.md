@@ -57,9 +57,18 @@ Owns no table directly. Reads/writes `token_blacklist` exclusively through `Toke
 6. return issue_tokens(user)            → brand-new pair
 ```
 
-Step 5 happens unconditionally before step 6 — this is what makes rotation atomic-in-effect:
-once a refresh token has been presented once (successfully or not, past step 3), it can never
-be redeemed again, whether or not step 6 itself succeeds.
+Step 5 happens unconditionally before step 6 — this ordering alone is *not* what makes rotation
+safe under concurrency, though: two requests racing to redeem the same token can both pass the
+step-3 blacklist check before either has committed step 5 (a classic TOCTOU window). What
+actually closes the window is `token_blacklist.jti` carrying a database-level `unique=True`
+constraint (`app/models/token_blacklist.py`) — only one concurrent `INSERT` can win. The losing
+request's `TokenRepository.blacklist()` call raises `IntegrityError`, which it catches and rolls
+back the session on (so the session stays usable, not left in SQLAlchemy's
+`PendingRollbackError` state), and which `TokenService.refresh()` in turn catches and translates
+into the same `InvalidRefreshTokenError` any other rejection produces — the loser gets a clean
+401, not an unhandled 500. Verified by
+`test_blacklist_raises_on_duplicate_jti_without_corrupting_the_session` (repository layer) and
+`test_refresh_rejects_gracefully_on_a_concurrent_redemption_race` (service layer).
 
 ### 6. Error Handling
 

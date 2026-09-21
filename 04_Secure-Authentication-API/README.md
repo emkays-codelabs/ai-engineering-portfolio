@@ -133,7 +133,7 @@ Logout  →  refresh token's jti blacklisted, cookie cleared
 01_Secure-Authentication-API/
 ├── backend/
 │   ├── app/                  # FastAPI app (api/, services/, repositories/, models/, schemas/, core/)
-│   ├── tests/                # 80 tests: unit/ + integration/
+│   ├── tests/                # 82 tests: unit/ + integration/
 │   ├── migrations/           # Alembic (upgrade + downgrade verified)
 │   ├── Dockerfile, docker-entrypoint.sh
 │   └── pyproject.toml, uv.lock
@@ -230,9 +230,9 @@ npx tsc -b && npx vite build
 
 ### 12.1 Test Results (actually run, not estimated)
 
-- **Backend**: 80/80 passed (`uv run pytest`), `ruff check .` clean.
+- **Backend**: 82/82 passed (`uv run pytest`), `ruff check .` clean.
 - **Frontend**: 21/21 passed (`vitest run`), TypeScript build clean (`tsc -b`), production
-  build succeeds (`vite build`), 0 ESLint errors.
+  build succeeds (`vite build`), 0 ESLint errors (1 non-blocking HMR-related warning).
 - **Docker**: full stack (`docker compose up --build`) verified live — migrations ran against
   real PostgreSQL, and a complete manual flow (register → login → protected route → refresh →
   logout → invalid-login-rejected) was exercised against the running containers.
@@ -273,11 +273,15 @@ Manual demo verification checklist and walkthrough: see task `H1` in
 | Security Review | Controls implemented + disclosed limitations | [docs/SECURITY.md](docs/SECURITY.md) |
 | ADR-0001 | JWT library choice | [adr/0001-jwt-library-choice.md](adr/0001-jwt-library-choice.md) |
 | ADR-0002 | Token transport & refresh-rotation strategy | [adr/0002-token-transport-and-refresh-rotation.md](adr/0002-token-transport-and-refresh-rotation.md) |
-| Presentation (video) | EP 01 — 10-chapter, 40-minute Remotion video, rendered + duration-verified via `ffprobe` | [presentation/remotion/](presentation/remotion/) |
-| Presentation (HTML deck) | EP 01 — 10-chapter management deck, matching structure | [presentation/html/](presentation/html/) |
-| YouTube episode manifest | Single-episode (EP 01) series manifest, naming convention | [presentation/youtube/series-manifest.md](presentation/youtube/series-manifest.md) |
+| Presentation (video) | EP 01 — 10-chapter, 40-minute Remotion video. **Rendered output is stale**: rendered before 3 on-screen clarifications were added to source; re-render intentionally on hold (see §17). | `presentation/remotion/` — local only, not in this git repo (see note below) |
+| Presentation (HTML deck) | EP 01 — 20-slide single self-contained HTML file (no build step, no external references) | `presentation/html/Secure Authentication API.html` — local only, not in this git repo |
+| YouTube episode manifest | Single-episode (EP 01) series manifest, naming convention | `presentation/youtube/series-manifest.md` — local only, not in this git repo |
 | Final Project Audit | 13-category gate-10 audit, disclosed gaps + next steps | [docs/FINAL_PROJECT_AUDIT.md](docs/FINAL_PROJECT_AUDIT.md) |
 | Task Board | Full task history with verification evidence per task | `.claude/project/TASK_TRACKER.md` |
+
+> **Note**: `presentation/` is intentionally excluded from this git repository (`.gitignore`) —
+> treated as local reference/build output, not versioned application source. The files above
+> exist on the machine this project was built on but will not be present in a fresh clone.
 
 [↑ Back to Table of Contents](#table-of-contents)
 
@@ -291,6 +295,10 @@ Manual demo verification checklist and walkthrough: see task `H1` in
   this project's single-origin scope, not for a multi-origin production deployment.
 - OAuth2 Resource Owner Password Credentials flow is used because `task.md` requires it — not
   recommended for new production OAuth deployments (see [docs/SECURITY.md](docs/SECURITY.md) Section 8).
+- The rendered Remotion video (`presentation/remotion/out/`) predates 3 on-screen clarifications
+  added to its own scene source (OAuth2 ROPC caveat, logout-revocation scope, cookie/CSRF
+  detail) — the source is current, the rendered `.mp4` is not yet. Re-render is deliberately
+  held pending explicit go-ahead, not forgotten.
 
 Full detail and rationale for each: [docs/SECURITY.md](docs/SECURITY.md) Section 10.
 
@@ -299,8 +307,12 @@ Full detail and rationale for each: [docs/SECURITY.md](docs/SECURITY.md) Section
 ## 18. Roadmap
 
 - [x] Manual end-to-end demo verification (`H1`)
-- [x] Remotion presentation video (`I1`) — `presentation/remotion/`
-- [x] Management HTML presentation deck (`I2`) — `presentation/html/`
+- [x] Remotion presentation video, 10-chapter/40-min (`I1`) — rendered `.mp4` is stale relative
+      to source; re-render on hold pending explicit go-ahead
+- [x] Management HTML presentation deck, 20-slide single-file (`I2`)
+- [x] Refresh-token rotation concurrency fix — closed a race window an external review flagged
+      (`backend/app/repositories/token_repository.py`, `backend/app/services/token_service.py`)
+- [ ] Re-render the Remotion video with its current, clarification-updated source
 - [ ] YouTube demo recording (`H2` — user action)
 - [ ] Submission (`H3` — user action)
 - [x] Final project audit (`docs/FINAL_PROJECT_AUDIT.md`)
