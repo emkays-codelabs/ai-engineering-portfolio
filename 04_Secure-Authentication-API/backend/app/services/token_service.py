@@ -2,6 +2,7 @@ import uuid
 from datetime import UTC, datetime
 
 import jwt
+from sqlalchemy.exc import IntegrityError
 
 from app.core.security import create_access_token, create_refresh_token, decode_token
 from app.exceptions.auth_exceptions import InvalidRefreshTokenError
@@ -45,9 +46,14 @@ class TokenService:
             raise InvalidRefreshTokenError()
 
         expires_at = datetime.fromtimestamp(payload["exp"], tz=UTC)
-        self._token_repo.blacklist(
-            jti=jti, user_id=user.id, token_type="refresh", expires_at=expires_at
-        )
+        try:
+            self._token_repo.blacklist(
+                jti=jti, user_id=user.id, token_type="refresh", expires_at=expires_at
+            )
+        except IntegrityError as exc:
+            # Lost a race with a concurrent refresh of the same token — the other
+            # request already consumed it; reject this one the same as any replay.
+            raise InvalidRefreshTokenError() from exc
 
         return self.issue_tokens(user)
 

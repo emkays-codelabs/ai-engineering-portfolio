@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.token_blacklist import TokenBlacklist
@@ -24,6 +25,13 @@ class TokenRepository:
             jti=jti, user_id=user_id, token_type=token_type, expires_at=expires_at
         )
         self._db.add(entry)
-        self._db.commit()
+        try:
+            self._db.commit()
+        except IntegrityError:
+            # A concurrent request already blacklisted this jti (unique constraint
+            # on token_blacklist.jti) — roll back so the session stays usable for
+            # the caller, then let the caller (TokenService) decide what it means.
+            self._db.rollback()
+            raise
         self._db.refresh(entry)
         return entry

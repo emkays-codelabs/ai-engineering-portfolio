@@ -151,6 +151,34 @@ def test_logout_is_idempotent_when_called_twice(db_session):
     service.logout(refresh_token)  # second call must not raise or double-insert
 
 
+def test_refresh_rejects_gracefully_on_a_concurrent_redemption_race(db_session):
+    """Simulates two requests racing to redeem the same refresh token: both pass
+    is_blacklisted() (stale read), but the DB's unique constraint means only one
+    insert can win. The loser must get a clean InvalidRefreshTokenError, not an
+    unhandled IntegrityError bubbling up as a 500.
+    """
+    from sqlalchemy.exc import IntegrityError
+
+    from app.exceptions.auth_exceptions import InvalidRefreshTokenError
+    from app.repositories.user_repository import UserRepository
+    from app.services.token_service import TokenService
+
+    class _RacingTokenRepo:
+        def is_blacklisted(self, jti):
+            return False  # stale read — hasn't seen the winner's insert yet
+
+        def blacklist(self, **kwargs):
+            raise IntegrityError("INSERT", {}, Exception("UNIQUE constraint failed"))
+
+    user = _register_user(db_session)
+    _access, refresh_token, _jti = _build_service(db_session).issue_tokens(user)
+
+    racing_service = TokenService(UserRepository(db_session), _RacingTokenRepo())
+
+    with pytest.raises(InvalidRefreshTokenError):
+        racing_service.refresh(refresh_token)
+
+
 def test_refresh_rejects_an_unknown_user(db_session):
     from app.core.security import create_refresh_token
     from app.exceptions.auth_exceptions import InvalidRefreshTokenError

@@ -19,9 +19,9 @@ frontend/build/
 .vite/
 *.tsbuildinfo
 
-# Remotion — regenerate via `npm run render` in presentation/remotion/
-presentation/remotion/out/
-presentation/remotion/.cache/
+# Presentation deliverables (Remotion source/render, HTML decks) — not part of the
+# application source tree
+presentation/
 
 # Environment / secrets
 .env
