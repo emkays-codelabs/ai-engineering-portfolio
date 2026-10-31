@@ -1,0 +1,42 @@
+# --- Virtual Environments (uv isolation) ---
+.venv/
+ai_env/
+venv/
+env/
+
+# --- Python Operational Cache ---
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Build Output (hatchling / uv build) ---
+dist/
+build/
+*.egg-info/
+
+# --- Environment Configurations & Secrets ---
+.env
+.env.*
+*.env
+!.env.example
+secrets.json
+
+# --- IDEs and Workspace Metadata ---
+# .vscode/* (not .vscode/) so the exceptions below can re-include shared config.
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+.idea/
+*.swp
+
+# --- Claude Code (local, per-machine settings) ---
+.claude/settings.local.json
+
+# --- AI Data & Local Cache Vector Stores ---
+.chroma/
+chroma_db/
+chroma.sqlite3
+*.log
